@@ -133,32 +133,3 @@ html.is-animating .mil-scroll-wrapper.transition-fade {
   opacity: 1 !important;
   transition: none !important;
 }
-
-/* Hide animated elements initially to prevent flash */
-.mil-up {
-  opacity: 0 !important;
-  transform: translateY(50px) !important;
-  visibility: hidden !important;
-}
-
-.mil-rotate {
-  transform: rotate(0deg) !important;
-}
-
-.mil-circular-progress {
-  --p: 0 !important;
-}
-
-.mil-counter {
-  opacity: 0 !important;
-  visibility: hidden !important;
-}
-
-/* Show elements only when GSAP animations are applied */
-.mil-up.gsap-ready {
-  visibility: visible !important;
-}
-
-.mil-counter.gsap-ready {
-  visibility: visible !important;
-}

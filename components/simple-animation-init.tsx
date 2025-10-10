@@ -31,12 +31,6 @@ export function SimpleAnimationInit() {
             const ScrollTrigger = (window as any).ScrollTrigger
             const Parallax = (window as any).Parallax
 
-            // Set initial state for animated elements immediately
-            gsap.set(".mil-up", { opacity: 0, y: 50 })
-            gsap.set(".mil-rotate", { rotate: 0 })
-            gsap.set(".mil-circular-progress", { "--p": 0 })
-            gsap.set(".mil-counter", { opacity: 0 })
-
             // Wait for preloader to complete
             const waitForPreloader = () => {
               if (!document.documentElement.classList.contains('is-animating')) {
@@ -99,9 +93,6 @@ export function SimpleAnimationInit() {
             // Initialize scroll animations for .mil-up elements (only once per route)
             if (!(window as any).milUpAnimationsInitialized) {
               gsap.utils.toArray(".mil-up").forEach((element: any) => {
-                // Add class to make element visible for GSAP
-                element.classList.add('gsap-ready')
-                
                 gsap.fromTo(
                   element,
                   {
@@ -173,9 +164,6 @@ export function SimpleAnimationInit() {
             // Initialize counter animations (only once per route)
             if (!(window as any).counterAnimationsInitialized) {
               $(".mil-counter").each(function (index: number, element: any) {
-                // Add class to make element visible for GSAP
-                element.classList.add('gsap-ready')
-                
                 const count = $(element)
                 const zero = { val: 0 }
                 const num = count.data("number")
@@ -188,9 +176,6 @@ export function SimpleAnimationInit() {
                   scrollTrigger: {
                     trigger: element,
                     toggleActions: 'play none none reverse',
-                  },
-                  onStart: function () {
-                    gsap.set(element, { opacity: 1 })
                   },
                   onUpdate: function () {
                     count.text(zero.val.toFixed(decimals))
