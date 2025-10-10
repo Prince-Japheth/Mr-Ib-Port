@@ -1,0 +1,19 @@
+app
+├── admin
+│   ├── layout.tsx
+│   ├── login
+│   │   └── page.tsx
+│   └── page.tsx
+├── globals.css
+├── layout.tsx
+└── public
+    ├── contact
+    │   └── page.tsx
+    ├── layout.tsx
+    ├── page.tsx
+    └── projects
+        ├── [id]
+        │   └── page.tsx
+        └── page.tsx
+
+7 directories, 10 files

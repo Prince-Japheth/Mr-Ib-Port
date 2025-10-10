@@ -1,0 +1,164 @@
+/* Preloader Styles - Exact match to original Miller */
+.mil-preloader-frame {
+  position: fixed;
+  z-index: 999999999;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 100vh;
+  width: 100vw;
+  background-color: rgb(255, 255, 255);
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  color: rgb(32, 33, 36);
+}
+
+.mil-preloader-frame .mil-preloader-content {
+  position: relative;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  text-align: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+}
+
+.mil-preloader-frame .mil-preloader-content:before {
+  content: "";
+  width: 1px;
+  height: 50vh;
+  background-color: rgb(233, 233, 233);
+  position: absolute;
+  bottom: calc(100% + 60px);
+  left: calc(50% - 4px);
+}
+
+.mil-preloader-frame .mil-preloader-content .mil-preloader {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  width: 60px;
+  height: 30px;
+}
+
+.mil-preloader-frame .mil-preloader-content .mil-preloader div {
+  background-color: rgb(76, 175, 80);
+  height: 7px;
+  width: 7px;
+  border-radius: 50%;
+  display: inline-block;
+  -webkit-animation: stretchdelay 1.1s infinite ease-in-out;
+          animation: stretchdelay 1.1s infinite ease-in-out;
+}
+
+.mil-preloader-frame .mil-preloader-content .mil-preloader div.mil-circ-2 {
+  -webkit-animation-delay: -0.9s;
+          animation-delay: -0.9s;
+}
+
+.mil-preloader-frame .mil-preloader-content .mil-preloader div.mil-circ-3 {
+  -webkit-animation-delay: -0.7s;
+          animation-delay: -0.7s;
+}
+
+.mil-preloader-frame .mil-preloader-content .mil-preloader div.mil-circ-4 {
+  -webkit-animation-delay: -0.4s;
+          animation-delay: -0.4s;
+}
+
+@-webkit-keyframes stretchdelay {
+  0%, 40%, 100% {
+    -webkit-transform: translateY(-10px);
+            transform: translateY(-10px);
+  }
+  20% {
+    -webkit-transform: translateY(-20px);
+            transform: translateY(-20px);
+  }
+}
+
+@keyframes stretchdelay {
+  0%, 40%, 100% {
+    -webkit-transform: translateY(-10px);
+            transform: translateY(-10px);
+  }
+  20% {
+    -webkit-transform: translateY(-20px);
+            transform: translateY(-20px);
+  }
+}
+
+/* Hide main content while preloader is active */
+.is-animating .mil-content {
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* Show main content after preloader completes */
+.mil-content {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* Fix for mil-scroll-wrapper stammer - completely disable transition-fade transforms */
+.mil-scroll-wrapper,
+.mil-scroll-wrapper.transition-fade,
+html.is-animating .mil-scroll-wrapper,
+html.is-animating .mil-scroll-wrapper.transition-fade {
+  transform: translateY(0) !important;
+  opacity: 1 !important;
+  transition: none !important;
+}
+
+/* Hide animated elements initially to prevent flash */
+.mil-up {
+  opacity: 0 !important;
+  transform: translateY(50px) !important;
+  visibility: hidden !important;
+}
+
+.mil-rotate {
+  transform: rotate(0deg) !important;
+}
+
+.mil-circular-progress {
+  --p: 0 !important;
+}
+
+.mil-counter {
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+/* Show elements only when GSAP animations are applied */
+.mil-up.gsap-ready {
+  visibility: visible !important;
+}
+
+.mil-counter.gsap-ready {
+  visibility: visible !important;
+}
