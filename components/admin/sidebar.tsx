@@ -88,7 +88,8 @@ export default function AdminSidebar({ isOpen = false, onClose }: AdminSidebarPr
       {/* Mobile overlay */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+          className="fixed inset-0 backdrop-blur-sm z-40 md:hidden"
+          style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)' }}
           onClick={onClose}
         />
       )}

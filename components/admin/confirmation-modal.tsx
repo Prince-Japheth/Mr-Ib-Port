@@ -90,7 +90,10 @@ export function ConfirmationModal({
       onClick={handleBackdropClick}
     >
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-opacity-30 backdrop-blur-sm" />
+        <div 
+          className="absolute inset-0 backdrop-blur-sm" 
+          style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)' }}
+        />
       
       {/* Modal */}
       <div

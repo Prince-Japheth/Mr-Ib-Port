@@ -148,7 +148,7 @@ export function EducationSection() {
                             <span className=""> in {edu.field_of_study}</span>
                           )}
                         </h5>
-                        <div className="mil-text-sm mil-upper mil-dark">
+                        <div className="mil-text-sm mil-upper mil-dark" style={{whiteSpace: 'nowrap'}}>
                           {formatDateRange(edu.start_date, edu.end_date, edu.is_current)}
                         </div>
                       </div>
