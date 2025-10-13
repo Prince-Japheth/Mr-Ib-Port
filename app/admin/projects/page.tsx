@@ -625,7 +625,7 @@ export default function ProjectsPage() {
         </div>
         <button
           onClick={handleAddNew}
-          className="bg-[#4c9baf] text-white px-4 py-2 rounded-lg hover:bg-gren-700 transition-colors duration-200 flex items-center gap-2"
+          className="bg-[#4c9baf] text-white px-4 py-2 rounded-lg hover:bg-[#60aec1] transition-colors duration-200 flex items-center gap-2"
         >
           <Plus className="w-4 h-4" />
           Add Project
@@ -780,7 +780,7 @@ export default function ProjectsPage() {
                         <CloudUpload className="w-8 h-8 text-gray-400 mb-2 mx-auto" />
                         <p className="text-sm text-gray-600">Drag & drop an image here</p>
                         <p className="text-xs text-gray-500">or</p>
-                        <label className="inline-block mt-2 px-3 py-1 bg-[#4c9baf] text-white text-sm rounded-md hover:bg-gren-700 cursor-pointer">
+                        <label className="inline-block mt-2 px-3 py-1 bg-[#4c9baf] text-white text-sm rounded-md hover:bg-[#60aec1] cursor-pointer">
                           <Upload className="w-3 h-3 mr-1 inline" />
                           Choose File
                           <input
@@ -866,7 +866,7 @@ export default function ProjectsPage() {
                       <CloudUpload className="w-8 h-8 text-gray-400 mb-2 mx-auto" />
                       <p className="text-sm text-gray-600">Drag & drop images here</p>
                       <p className="text-xs text-gray-500">or</p>
-                      <label className="inline-block mt-2 px-3 py-1 bg-[#4c9baf] text-white text-sm rounded-md hover:bg-gren-700 cursor-pointer">
+                      <label className="inline-block mt-2 px-3 py-1 bg-[#4c9baf] text-white text-sm rounded-md hover:bg-[#60aec1] cursor-pointer">
                         <Upload className="w-3 h-3 mr-1 inline" />
                         Choose Files
                         <input
@@ -979,7 +979,7 @@ export default function ProjectsPage() {
             <button
               onClick={handleAddProject}
               disabled={isSaving}
-              className="bg-[#4c9baf] text-white px-4 py-2 rounded-lg hover:bg-gren-700 transition-colors duration-200 flex items-center gap-2 disabled:opacity-50"
+              className="bg-[#4c9baf] text-white px-4 py-2 rounded-lg hover:bg-[#60aec1] transition-colors duration-200 flex items-center gap-2 disabled:opacity-50"
             >
               {isSaving ? (
                 <>
@@ -1049,7 +1049,7 @@ export default function ProjectsPage() {
                   href={project.github_url} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="text-[#4c9baf] hover:text-gren-700 text-sm flex items-center gap-1"
+                  className="text-[#4c9baf] hover:text-[#60aec1] text-sm flex items-center gap-1"
                 >
                   <Github className="w-3 h-3" />
                   GitHub
@@ -1060,7 +1060,7 @@ export default function ProjectsPage() {
                   href={project.live_url} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="text-[#4c9baf] hover:text-gren-700 text-sm flex items-center gap-1"
+                  className="text-[#4c9baf] hover:text-[#60aec1] text-sm flex items-center gap-1"
                 >
                   <ExternalLink className="w-3 h-3" />
                   Live Demo

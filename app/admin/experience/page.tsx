@@ -289,7 +289,7 @@ export default function ExperiencePage() {
         </div>
         <button
           onClick={handleAddNew}
-          className="bg-[#4c9baf] text-white px-4 py-2 rounded-lg hover:bg-gren-700 transition-colors duration-200 flex items-center gap-2"
+          className="bg-[#4c9baf] text-white px-4 py-2 rounded-lg hover:bg-[#60aec1] transition-colors duration-200 flex items-center gap-2"
         >
           <Plus className="w-4 h-4" />
           Add Experience
@@ -406,7 +406,7 @@ export default function ExperiencePage() {
             <button
               onClick={handleAddExperience}
               disabled={isSaving}
-              className="bg-[#4c9baf] text-white px-4 py-2 rounded-lg hover:bg-gren-700 transition-colors duration-200 flex items-center gap-2 disabled:opacity-50"
+              className="bg-[#4c9baf] text-white px-4 py-2 rounded-lg hover:bg-[#60aec1] transition-colors duration-200 flex items-center gap-2 disabled:opacity-50"
             >
               {isSaving ? (
                 <>
@@ -523,7 +523,7 @@ export default function ExperiencePage() {
             <p className="text-gray-600 mb-4">Add your first work experience to get started.</p>
             <button
               onClick={handleAddNew}
-              className="bg-[#4c9baf] text-white px-4 py-2 rounded-lg hover:bg-gren-700 transition-colors duration-200 flex items-center gap-2 mx-auto"
+              className="bg-[#4c9baf] text-white px-4 py-2 rounded-lg hover:bg-[#60aec1] transition-colors duration-200 flex items-center gap-2 mx-auto"
             >
               <Plus className="w-4 h-4" />
               Add Experience

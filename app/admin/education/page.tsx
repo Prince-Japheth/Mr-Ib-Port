@@ -239,7 +239,7 @@ export default function EducationPage() {
         <h1 className="text-2xl font-bold text-gray-900">Education Management</h1>
         <button
           onClick={handleAddNew}
-          className="bg-[#4c9baf] text-white px-4 py-2 rounded-md hover:bg-gren-700 flex items-center gap-2"
+          className="bg-[#4c9baf] text-white px-4 py-2 rounded-md hover:bg-[#60aec1] flex items-center gap-2"
         >
           <Plus size={20} />
           Add Education
@@ -392,7 +392,7 @@ export default function EducationPage() {
             <button
               onClick={handleSave}
               disabled={isSaving || !formData.institution.trim() || !formData.degree.trim() || !formData.start_date}
-              className="bg-[#4c9baf] text-white px-4 py-2 rounded-md hover:bg-gren-700 disabled:opacity-50 flex items-center gap-2"
+              className="bg-[#4c9baf] text-white px-4 py-2 rounded-md hover:bg-[#60aec1] disabled:opacity-50 flex items-center gap-2"
             >
               {isSaving ? <Loader2 size={20} className="animate-spin" /> : <Save size={20} />}
               {isSaving ? 'Saving...' : 'Save'}

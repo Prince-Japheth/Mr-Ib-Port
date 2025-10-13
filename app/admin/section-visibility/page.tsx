@@ -135,7 +135,7 @@ export default function SectionVisibilityPage() {
                     className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors ${
                       section.is_visible
                         ? 'bg-red-100 text-red-700 hover:bg-red-200'
-                        : 'bg-green-100 text-gren-700 hover:bg-green-200'
+                        : 'bg-green-100 text-[#60aec1] hover:bg-green-200'
                     } disabled:opacity-50`}
                   >
                     {isSaving ? (

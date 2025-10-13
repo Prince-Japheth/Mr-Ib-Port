@@ -191,7 +191,7 @@ export default function SettingsPage() {
         <button
           onClick={handleSaveSettings}
           disabled={isSaving}
-          className="bg-[#4c9baf] text-white px-4 py-2 rounded-lg hover:bg-gren-700 transition-colors duration-200 flex items-center gap-2 disabled:opacity-50"
+          className="bg-[#4c9baf] text-white px-4 py-2 rounded-lg hover:bg-[#60aec1] transition-colors duration-200 flex items-center gap-2 disabled:opacity-50"
         >
           {isSaving ? (
             <>

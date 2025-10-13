@@ -188,7 +188,7 @@ export default function AdminHeader({ onMenuToggle, isMenuOpen }: AdminHeaderPro
                 <div className="px-4 py-2 border-t border-gray-100">
                   <button
                     onClick={() => router.push(`/admin/search?q=${encodeURIComponent(searchQuery)}`)}
-                    className="w-full text-center text-sm text-[#4c9baf] hover:text-gren-700 font-medium"
+                    className="w-full text-center text-sm text-[#4c9baf] hover:text-[#60aec1] font-medium"
                   >
                     View all results for "{searchQuery}"
                   </button>

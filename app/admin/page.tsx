@@ -153,7 +153,7 @@ export default async function AdminDashboard() {
                 <Link
                   key={action.label}
                   href={action.href}
-                  className="flex items-center justify-center space-x-2 px-3 md:px-4 py-2 bg-[#4c9baf] hover:bg-gren-700 text-white font-medium rounded-md transition-colors duration-200 text-sm md:text-base"
+                  className="flex items-center justify-center space-x-2 px-3 md:px-4 py-2 bg-[#4c9baf] hover:bg-[#60aec1] text-white font-medium rounded-md transition-colors duration-200 text-sm md:text-base"
                 >
                   <action.icon className="w-4 h-4" />
                   <span className="truncate">{action.label}</span>
@@ -168,7 +168,7 @@ export default async function AdminDashboard() {
           <div className="bg-white border border-gray-200 rounded-lg p-4 md:p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-gray-900">Recent Activity</h2>
-              <Link href="/admin/projects" className="text-[#4c9baf] hover:text-gren-700 text-sm font-medium">
+              <Link href="/admin/projects" className="text-[#4c9baf] hover:text-[#60aec1] text-sm font-medium">
                 View All
               </Link>
             </div>
@@ -202,7 +202,7 @@ export default async function AdminDashboard() {
       <div className="bg-white border border-gray-200 rounded-lg p-4 md:p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-gray-900">Recent Messages</h2>
-          <Link href="/admin/messages" className="text-[#4c9baf] hover:text-gren-700 text-sm font-medium">
+          <Link href="/admin/messages" className="text-[#4c9baf] hover:text-[#60aec1] text-sm font-medium">
             View All
           </Link>
         </div>

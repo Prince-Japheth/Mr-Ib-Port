@@ -312,7 +312,7 @@ export default function MessagesPage() {
                   ) : (
                     <button
                       onClick={() => markAsRead(selectedMessage.id)}
-                      className="flex items-center gap-2 px-3 py-1 bg-green-100 text-gren-700 rounded-md hover:bg-green-200 transition-colors text-sm"
+                      className="flex items-center gap-2 px-3 py-1 bg-green-100 text-[#60aec1] rounded-md hover:bg-green-200 transition-colors text-sm"
                     >
                       <Eye className="w-4 h-4" />
                       Mark as Read

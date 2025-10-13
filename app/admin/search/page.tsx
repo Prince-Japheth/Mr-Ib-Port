@@ -153,7 +153,7 @@ export default function SearchPage() {
           </div>
           <button
             type="submit"
-            className="px-4 py-2 bg-[#4c9baf] text-white rounded-md hover:bg-gren-700 transition-colors"
+            className="px-4 py-2 bg-[#4c9baf] text-white rounded-md hover:bg-[#60aec1] transition-colors"
           >
             Search
           </button>
