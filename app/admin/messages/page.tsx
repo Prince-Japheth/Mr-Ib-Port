@@ -275,7 +275,7 @@ export default function MessagesPage() {
                     </div>
                     <div>
                       <h2 className="text-lg font-semibold text-gray-900">{selectedMessage.name}</h2>
-                      <p className="text-green-600">{selectedMessage.email}</p>
+                      <p className="text-[#4c9baf]">{selectedMessage.email}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
@@ -312,7 +312,7 @@ export default function MessagesPage() {
                   ) : (
                     <button
                       onClick={() => markAsRead(selectedMessage.id)}
-                      className="flex items-center gap-2 px-3 py-1 bg-green-100 text-green-700 rounded-md hover:bg-green-200 transition-colors text-sm"
+                      className="flex items-center gap-2 px-3 py-1 bg-green-100 text-gren-700 rounded-md hover:bg-green-200 transition-colors text-sm"
                     >
                       <Eye className="w-4 h-4" />
                       Mark as Read

@@ -110,7 +110,7 @@ export default async function AdminDashboard() {
               <p className="text-gray-500 text-sm">Last updated</p>
               <p className="text-gray-900 font-medium">{new Date().toLocaleDateString()}</p>
             </div>
-            <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-[#4c9baf] rounded-lg flex items-center justify-center">
               <ChartLine className="w-5 h-5 text-white" />
             </div>
           </div>
@@ -126,7 +126,7 @@ export default async function AdminDashboard() {
             className="bg-white border border-gray-200 rounded-lg p-4 md:p-6 hover:border-gray-300 hover:shadow-sm transition-all duration-200"
           >
             <div className="flex items-center justify-between mb-4">
-              <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 bg-[#4c9baf] rounded-lg flex items-center justify-center">
                 <stat.icon className="w-5 h-5 text-white" />
               </div>
               <div className="text-right">
@@ -153,7 +153,7 @@ export default async function AdminDashboard() {
                 <Link
                   key={action.label}
                   href={action.href}
-                  className="flex items-center justify-center space-x-2 px-3 md:px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-md transition-colors duration-200 text-sm md:text-base"
+                  className="flex items-center justify-center space-x-2 px-3 md:px-4 py-2 bg-[#4c9baf] hover:bg-gren-700 text-white font-medium rounded-md transition-colors duration-200 text-sm md:text-base"
                 >
                   <action.icon className="w-4 h-4" />
                   <span className="truncate">{action.label}</span>
@@ -168,7 +168,7 @@ export default async function AdminDashboard() {
           <div className="bg-white border border-gray-200 rounded-lg p-4 md:p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-gray-900">Recent Activity</h2>
-              <Link href="/admin/projects" className="text-green-600 hover:text-green-700 text-sm font-medium">
+              <Link href="/admin/projects" className="text-[#4c9baf] hover:text-gren-700 text-sm font-medium">
                 View All
               </Link>
             </div>
@@ -176,7 +176,7 @@ export default async function AdminDashboard() {
               {recentProjects?.map((project, index) => (
                 <div key={project.id} className="flex items-center space-x-3 md:space-x-4 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                   <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <FolderOpen className="w-4 h-4 text-green-600" />
+                    <FolderOpen className="w-4 h-4 text-[#4c9baf]" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <h4 className="text-gray-900 font-medium truncate">{project.title}</h4>
@@ -202,7 +202,7 @@ export default async function AdminDashboard() {
       <div className="bg-white border border-gray-200 rounded-lg p-4 md:p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-gray-900">Recent Messages</h2>
-          <Link href="/admin/messages" className="text-green-600 hover:text-green-700 text-sm font-medium">
+          <Link href="/admin/messages" className="text-[#4c9baf] hover:text-gren-700 text-sm font-medium">
             View All
           </Link>
         </div>

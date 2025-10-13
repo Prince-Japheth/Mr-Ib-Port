@@ -242,7 +242,7 @@ export default function BannerImagesPage() {
         <h1 className="text-2xl font-bold text-gray-900">Banner Images Management</h1>
         <button
           onClick={handleAddNew}
-          className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 flex items-center gap-2"
+          className="bg-[#4c9baf] text-white px-4 py-2 rounded-md hover:bg-gren-700 flex items-center gap-2"
         >
           <Plus size={20} />
           Add Image
@@ -303,14 +303,14 @@ export default function BannerImagesPage() {
             <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
               {isUploading ? (
                 <div className="flex items-center justify-center gap-2">
-                  <Loader2 className="w-4 h-4 text-green-600 animate-spin" />
-                  <span className="text-green-600">Uploading...</span>
+                  <Loader2 className="w-4 h-4 text-[#4c9baf] animate-spin" />
+                  <span className="text-[#4c9baf]">Uploading...</span>
                 </div>
               ) : (
                 <div>
                   <CloudUpload className="w-8 h-8 text-gray-400 mb-2 mx-auto" />
                   <p className="text-sm text-gray-600">Upload an image</p>
-                  <label className="inline-block mt-2 px-3 py-1 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 cursor-pointer">
+                  <label className="inline-block mt-2 px-3 py-1 bg-[#4c9baf] text-white text-sm rounded-md hover:bg-gren-700 cursor-pointer">
                     <Upload className="w-3 h-3 mr-1 inline" />
                     Choose File
                     <input
@@ -369,7 +369,7 @@ export default function BannerImagesPage() {
             <button
               onClick={handleSave}
               disabled={isSaving || !formData.image_url.trim()}
-              className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 disabled:opacity-50 flex items-center gap-2"
+              className="bg-[#4c9baf] text-white px-4 py-2 rounded-md hover:bg-gren-700 disabled:opacity-50 flex items-center gap-2"
             >
               {isSaving ? <Loader2 size={20} className="animate-spin" /> : <Save size={20} />}
               {isSaving ? 'Saving...' : 'Save'}

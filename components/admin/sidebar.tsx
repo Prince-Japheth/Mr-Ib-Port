@@ -118,12 +118,12 @@ export default function AdminSidebar({ isOpen = false, onClose }: AdminSidebarPr
                 onClick={onClose}
                 className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors duration-200 ${
                   isActive 
-                    ? "bg-green-50 text-green-700 border-r-2 border-green-600" 
+                    ? "bg-green-50 text-gren-700 border-r-2 border-[#4c9baf]" 
                     : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                 }`}
               >
                 <div className={`w-5 h-5 flex items-center justify-center relative ${
-                  isActive ? "text-green-600" : "text-gray-400"
+                  isActive ? "text-[#4c9baf]" : "text-gray-400"
                 }`}>
                   <item.icon className="w-4 h-4" />
                   {hasNotification && (

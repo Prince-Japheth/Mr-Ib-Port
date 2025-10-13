@@ -328,7 +328,7 @@ export default function TestimonialsPage() {
         </div>
         <button
           onClick={handleAddNew}
-          className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors duration-200 flex items-center gap-2"
+          className="bg-[#4c9baf] text-white px-4 py-2 rounded-lg hover:bg-gren-700 transition-colors duration-200 flex items-center gap-2"
         >
           <Plus className="w-4 h-4" />
           Add Review
@@ -434,15 +434,15 @@ export default function TestimonialsPage() {
                 >
                   {isUploading ? (
                     <div className="flex items-center justify-center gap-2">
-                      <Loader2 className="w-4 h-4 text-green-600 animate-spin" />
-                      <span className="text-green-600">Uploading...</span>
+                      <Loader2 className="w-4 h-4 text-[#4c9baf] animate-spin" />
+                      <span className="text-[#4c9baf]">Uploading...</span>
                     </div>
                   ) : (
                     <div>
                       <CloudUpload className="w-8 h-8 text-gray-400 mb-2 mx-auto" />
                       <p className="text-sm text-gray-600">Drag & drop an image here</p>
                       <p className="text-xs text-gray-500">or</p>
-                      <label className="inline-block mt-2 px-3 py-1 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 cursor-pointer">
+                      <label className="inline-block mt-2 px-3 py-1 bg-[#4c9baf] text-white text-sm rounded-md hover:bg-gren-700 cursor-pointer">
                         <Upload className="w-3 h-3 mr-1 inline" />
                         Choose File
                         <input
@@ -464,7 +464,7 @@ export default function TestimonialsPage() {
                 name="is_active"
                 checked={formData.is_active}
                 onChange={handleInputChange}
-                className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                className="w-4 h-4 text-[#4c9baf] border-gray-300 rounded focus:ring-green-500"
               />
               <label className="text-sm font-medium text-gray-700">Active</label>
             </div>
@@ -474,7 +474,7 @@ export default function TestimonialsPage() {
             <button
               onClick={handleAddReview}
               disabled={isSaving}
-              className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors duration-200 flex items-center gap-2 disabled:opacity-50"
+              className="bg-[#4c9baf] text-white px-4 py-2 rounded-lg hover:bg-gren-700 transition-colors duration-200 flex items-center gap-2 disabled:opacity-50"
             >
               {isSaving ? (
                 <>
@@ -513,12 +513,12 @@ export default function TestimonialsPage() {
                       className="w-12 h-12 rounded-full object-cover" 
                     />
                   ) : (
-                    <User className="w-6 h-6 text-green-600" />
+                    <User className="w-6 h-6 text-[#4c9baf]" />
                   )}
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900">{review.client_name}</h3>
-                  <p className="text-green-600 text-sm flex items-center gap-1">
+                  <p className="text-[#4c9baf] text-sm flex items-center gap-1">
                     <Building className="w-3 h-3" />
                     {review.company}
                   </p>
@@ -527,7 +527,7 @@ export default function TestimonialsPage() {
               <div className="flex gap-2">
                 <button
                   onClick={() => handleEdit(review)}
-                  className="text-gray-400 hover:text-green-600 transition-colors duration-200"
+                  className="text-gray-400 hover:text-[#4c9baf] transition-colors duration-200"
                 >
                   <Edit className="w-4 h-4" />
                 </button>
@@ -575,7 +575,7 @@ export default function TestimonialsPage() {
           <p className="text-gray-600 mb-4">Add your first client review to get started.</p>
           <button
             onClick={handleAddNew}
-            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors duration-200 flex items-center gap-2 mx-auto"
+            className="bg-[#4c9baf] text-white px-4 py-2 rounded-lg hover:bg-gren-700 transition-colors duration-200 flex items-center gap-2 mx-auto"
           >
             <Plus className="w-4 h-4" />
             Add Review

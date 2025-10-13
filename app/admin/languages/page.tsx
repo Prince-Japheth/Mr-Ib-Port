@@ -238,7 +238,7 @@ export default function LanguagesPage() {
         </div>
         <button
           onClick={handleAddNew}
-          className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors duration-200 flex items-center gap-2"
+          className="bg-[#4c9baf] text-white px-4 py-2 rounded-lg hover:bg-gren-700 transition-colors duration-200 flex items-center gap-2"
         >
           <Plus className="w-4 h-4" />
           Add Language
@@ -312,7 +312,7 @@ export default function LanguagesPage() {
                 name="is_active"
                 checked={formData.is_active}
                 onChange={handleInputChange}
-                className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                className="w-4 h-4 text-[#4c9baf] border-gray-300 rounded focus:ring-green-500"
               />
               <label className="text-sm font-medium text-gray-700">Active</label>
             </div>
@@ -322,7 +322,7 @@ export default function LanguagesPage() {
             <button
               onClick={handleAddLanguageSkill}
               disabled={isSaving}
-              className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors duration-200 flex items-center gap-2 disabled:opacity-50"
+              className="bg-[#4c9baf] text-white px-4 py-2 rounded-lg hover:bg-gren-700 transition-colors duration-200 flex items-center gap-2 disabled:opacity-50"
             >
               {isSaving ? (
                 <>
@@ -356,7 +356,7 @@ export default function LanguagesPage() {
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                    <Languages className="w-5 h-5 text-green-600" />
+                    <Languages className="w-5 h-5 text-[#4c9baf]" />
                   </div>
                   <div>
                     <h3 className="text-sm font-semibold text-gray-900">{languageSkill.language}</h3>
@@ -366,7 +366,7 @@ export default function LanguagesPage() {
                 <div className="flex gap-1">
                   <button
                     onClick={() => handleEdit(languageSkill)}
-                    className="text-gray-400 hover:text-green-600 transition-colors duration-200 p-1"
+                    className="text-gray-400 hover:text-[#4c9baf] transition-colors duration-200 p-1"
                   >
                     <Edit className="w-3 h-3" />
                   </button>
@@ -419,7 +419,7 @@ export default function LanguagesPage() {
           <p className="text-gray-600 mb-4">Add your language proficiency levels to get started.</p>
           <button
             onClick={handleAddNew}
-            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors duration-200 flex items-center gap-2 mx-auto"
+            className="bg-[#4c9baf] text-white px-4 py-2 rounded-lg hover:bg-gren-700 transition-colors duration-200 flex items-center gap-2 mx-auto"
           >
             <Plus className="w-4 h-4" />
             Add Language

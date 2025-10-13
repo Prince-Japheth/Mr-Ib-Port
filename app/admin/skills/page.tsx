@@ -288,7 +288,7 @@ export default function SkillsPage() {
         </div>
         <button
           onClick={handleAddNew}
-          className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors duration-200 flex items-center gap-2"
+          className="bg-[#4c9baf] text-white px-4 py-2 rounded-lg hover:bg-gren-700 transition-colors duration-200 flex items-center gap-2"
         >
           <Plus className="w-4 h-4" />
           Add Skill
@@ -361,15 +361,15 @@ export default function SkillsPage() {
                 >
                   {isUploading ? (
                     <div className="flex items-center justify-center gap-2">
-                      <Loader2 className="w-4 h-4 text-green-600 animate-spin" />
-                      <span className="text-green-600">Uploading...</span>
+                      <Loader2 className="w-4 h-4 text-[#4c9baf] animate-spin" />
+                      <span className="text-[#4c9baf]">Uploading...</span>
                     </div>
                   ) : (
                     <div>
                       <CloudUpload className="w-8 h-8 text-gray-400 mb-2 mx-auto" />
                       <p className="text-sm text-gray-600">Drag & drop an icon here</p>
                       <p className="text-xs text-gray-500">or</p>
-                      <label className="inline-block mt-2 px-3 py-1 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 cursor-pointer">
+                      <label className="inline-block mt-2 px-3 py-1 bg-[#4c9baf] text-white text-sm rounded-md hover:bg-gren-700 cursor-pointer">
                         <Upload className="w-3 h-3 mr-1 inline" />
                         Choose File
                         <input
@@ -404,7 +404,7 @@ export default function SkillsPage() {
               name="is_active"
               checked={formData.is_active}
               onChange={handleInputChange}
-              className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+              className="w-4 h-4 text-[#4c9baf] border-gray-300 rounded focus:ring-green-500"
             />
             <label className="text-sm font-medium text-gray-700">Active</label>
           </div>
@@ -413,7 +413,7 @@ export default function SkillsPage() {
             <button
               onClick={handleAddSkill}
               disabled={isSaving}
-              className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors duration-200 flex items-center gap-2 disabled:opacity-50"
+              className="bg-[#4c9baf] text-white px-4 py-2 rounded-lg hover:bg-gren-700 transition-colors duration-200 flex items-center gap-2 disabled:opacity-50"
             >
               {isSaving ? (
                 <>
@@ -447,13 +447,13 @@ export default function SkillsPage() {
                 {skill.icon_url ? (
                   <img src={skill.icon_url} alt={skill.name} className="w-6 h-6" />
                 ) : (
-                  <Code className="w-5 h-5 text-green-600" />
+                  <Code className="w-5 h-5 text-[#4c9baf]" />
                 )}
               </div>
               <div className="flex gap-1">
                 <button
                   onClick={() => handleEdit(skill)}
-                  className="text-gray-400 hover:text-green-600 transition-colors duration-200 p-1"
+                  className="text-gray-400 hover:text-[#4c9baf] transition-colors duration-200 p-1"
                 >
                   <Edit className="w-3 h-3" />
                 </button>

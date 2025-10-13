@@ -165,7 +165,7 @@ export default function AdminHeader({ onMenuToggle, isMenuOpen }: AdminHeaderPro
                   >
                     <div className="flex items-start gap-3">
                       <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <Search className="w-4 h-4 text-green-600" />
+                        <Search className="w-4 h-4 text-[#4c9baf]" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
@@ -188,7 +188,7 @@ export default function AdminHeader({ onMenuToggle, isMenuOpen }: AdminHeaderPro
                 <div className="px-4 py-2 border-t border-gray-100">
                   <button
                     onClick={() => router.push(`/admin/search?q=${encodeURIComponent(searchQuery)}`)}
-                    className="w-full text-center text-sm text-green-600 hover:text-green-700 font-medium"
+                    className="w-full text-center text-sm text-[#4c9baf] hover:text-gren-700 font-medium"
                   >
                     View all results for "{searchQuery}"
                   </button>

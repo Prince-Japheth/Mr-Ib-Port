@@ -240,7 +240,7 @@ export default function FloatingSkillsPage() {
         <h1 className="text-2xl font-bold text-gray-900">Floating Skills Management</h1>
         <button
           onClick={handleAddNew}
-          className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 flex items-center gap-2"
+          className="bg-[#4c9baf] text-white px-4 py-2 rounded-md hover:bg-gren-700 flex items-center gap-2"
         >
           <Plus size={20} />
           Add Skill
@@ -420,7 +420,7 @@ export default function FloatingSkillsPage() {
             <button
               onClick={handleSave}
               disabled={isSaving || !formData.name.trim() || !formData.icon_url.trim()}
-              className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 disabled:opacity-50 flex items-center gap-2"
+              className="bg-[#4c9baf] text-white px-4 py-2 rounded-md hover:bg-gren-700 disabled:opacity-50 flex items-center gap-2"
             >
               {isSaving ? <Loader2 size={20} className="animate-spin" /> : <Save size={20} />}
               {isSaving ? 'Saving...' : 'Save'}

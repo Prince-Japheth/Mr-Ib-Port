@@ -220,7 +220,7 @@ export default function PersonalInfoPage() {
         </div>
         <button
           onClick={handleEditToggle}
-          className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors duration-200 flex items-center gap-2"
+          className="bg-[#4c9baf] text-white px-4 py-2 rounded-lg hover:bg-gren-700 transition-colors duration-200 flex items-center gap-2"
         >
           {isEditing ? <X className="w-4 h-4" /> : <Edit className="w-4 h-4" />}
           {isEditing ? "Cancel" : "Edit"}
@@ -233,7 +233,7 @@ export default function PersonalInfoPage() {
           {/* Basic Information */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-              <User className="w-5 h-5 text-green-600" />
+              <User className="w-5 h-5 text-[#4c9baf]" />
               Basic Information
             </h3>
             
@@ -277,7 +277,7 @@ export default function PersonalInfoPage() {
           {/* Contact Information */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-              <MapPin className="w-5 h-5 text-green-600" />
+              <MapPin className="w-5 h-5 text-[#4c9baf]" />
               Location & Images
             </h3>
             
@@ -322,15 +322,15 @@ export default function PersonalInfoPage() {
                   >
                     {uploadingField === 'avatar_url' ? (
                       <div className="flex items-center justify-center gap-2">
-                        <Loader2 className="w-4 h-4 text-green-600 animate-spin" />
-                        <span className="text-green-600">Uploading...</span>
+                        <Loader2 className="w-4 h-4 text-[#4c9baf] animate-spin" />
+                        <span className="text-[#4c9baf]">Uploading...</span>
                       </div>
                     ) : (
                       <div>
                         <CloudUpload className="w-8 h-8 text-gray-400 mb-2 mx-auto" />
                         <p className="text-sm text-gray-600">Drag & drop an image here</p>
                         <p className="text-xs text-gray-500">or</p>
-                        <label className="inline-block mt-2 px-3 py-1 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 cursor-pointer">
+                        <label className="inline-block mt-2 px-3 py-1 bg-[#4c9baf] text-white text-sm rounded-md hover:bg-gren-700 cursor-pointer">
                           <Upload className="w-3 h-3 mr-1 inline" />
                           Choose File
                           <input
@@ -376,15 +376,15 @@ export default function PersonalInfoPage() {
                   >
                     {uploadingField === 'signature_image_url' ? (
                       <div className="flex items-center justify-center gap-2">
-                        <Loader2 className="w-4 h-4 text-green-600 animate-spin" />
-                        <span className="text-green-600">Uploading...</span>
+                        <Loader2 className="w-4 h-4 text-[#4c9baf] animate-spin" />
+                        <span className="text-[#4c9baf]">Uploading...</span>
                       </div>
                     ) : (
                       <div>
                         <CloudUpload className="w-8 h-8 text-gray-400 mb-2 mx-auto" />
                         <p className="text-sm text-gray-600">Drag & drop an image here</p>
                         <p className="text-xs text-gray-500">or</p>
-                        <label className="inline-block mt-2 px-3 py-1 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 cursor-pointer">
+                        <label className="inline-block mt-2 px-3 py-1 bg-[#4c9baf] text-white text-sm rounded-md hover:bg-gren-700 cursor-pointer">
                           <Upload className="w-3 h-3 mr-1 inline" />
                           Choose File
                           <input
@@ -406,7 +406,7 @@ export default function PersonalInfoPage() {
         {/* Bio Section */}
         <div className="mt-6">
           <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2 mb-4">
-            <FileText className="w-5 h-5 text-green-600" />
+            <FileText className="w-5 h-5 text-[#4c9baf]" />
             Professional Bio
           </h3>
           <textarea
@@ -426,7 +426,7 @@ export default function PersonalInfoPage() {
             <button
               onClick={handleSave}
               disabled={isSaving}
-              className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors duration-200 flex items-center gap-2 disabled:opacity-50"
+              className="bg-[#4c9baf] text-white px-6 py-2 rounded-lg hover:bg-gren-700 transition-colors duration-200 flex items-center gap-2 disabled:opacity-50"
             >
               {isSaving ? (
                 <>

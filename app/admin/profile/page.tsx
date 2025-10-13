@@ -213,7 +213,7 @@ export default function AdminProfilePage() {
       {showSuccess && (
         <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center gap-3">
           <div className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center">
-            <CheckCircle className="w-3 h-3 text-green-600" />
+            <CheckCircle className="w-3 h-3 text-[#4c9baf]" />
           </div>
           <p className="text-green-800 font-medium">Settings updated successfully!</p>
         </div>
@@ -233,7 +233,7 @@ export default function AdminProfilePage() {
         {/* Email Settings */}
         <div className="bg-white border border-gray-200 rounded-lg p-6">
           <div className="flex items-center gap-2 mb-6">
-            <Mail className="w-5 h-5 text-green-600" />
+            <Mail className="w-5 h-5 text-[#4c9baf]" />
             <h2 className="text-lg font-semibold text-gray-900">Email Settings</h2>
           </div>
           
@@ -253,7 +253,7 @@ export default function AdminProfilePage() {
             <button
               onClick={handleSaveEmail}
               disabled={isSaving}
-              className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors duration-200 flex items-center gap-2 disabled:opacity-50"
+              className="bg-[#4c9baf] text-white px-4 py-2 rounded-lg hover:bg-gren-700 transition-colors duration-200 flex items-center gap-2 disabled:opacity-50"
             >
               {isSaving ? (
                 <>
@@ -273,7 +273,7 @@ export default function AdminProfilePage() {
         {/* Password Settings */}
         <div className="bg-white border border-gray-200 rounded-lg p-6">
           <div className="flex items-center gap-2 mb-6">
-            <Lock className="w-5 h-5 text-green-600" />
+            <Lock className="w-5 h-5 text-[#4c9baf]" />
             <h2 className="text-lg font-semibold text-gray-900">Password Settings</h2>
           </div>
           
@@ -344,7 +344,7 @@ export default function AdminProfilePage() {
             <button
               onClick={handleChangePassword}
               disabled={isSaving}
-              className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors duration-200 flex items-center gap-2 disabled:opacity-50"
+              className="bg-[#4c9baf] text-white px-4 py-2 rounded-lg hover:bg-gren-700 transition-colors duration-200 flex items-center gap-2 disabled:opacity-50"
             >
               {isSaving ? (
                 <>
@@ -365,7 +365,7 @@ export default function AdminProfilePage() {
       {/* Account Information */}
       <div className="bg-white border border-gray-200 rounded-lg p-6">
         <div className="flex items-center gap-2 mb-6">
-          <User className="w-5 h-5 text-green-600" />
+          <User className="w-5 h-5 text-[#4c9baf]" />
           <h2 className="text-lg font-semibold text-gray-900">Account Information</h2>
         </div>
         

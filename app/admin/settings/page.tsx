@@ -131,19 +131,19 @@ export default function SettingsPage() {
   const getSettingIcon = (key: string) => {
     switch (key) {
       case 'site_title':
-        return <Globe className="w-5 h-5 text-green-600" />
+        return <Globe className="w-5 h-5 text-[#4c9baf]" />
       case 'site_description':
-        return <Info className="w-5 h-5 text-green-600" />
+        return <Info className="w-5 h-5 text-[#4c9baf]" />
       case 'copyright_text':
-        return <Copyright className="w-5 h-5 text-green-600" />
+        return <Copyright className="w-5 h-5 text-[#4c9baf]" />
       case 'contact_email':
-        return <Mail className="w-5 h-5 text-green-600" />
+        return <Mail className="w-5 h-5 text-[#4c9baf]" />
       case 'contact_phone':
-        return <Phone className="w-5 h-5 text-green-600" />
+        return <Phone className="w-5 h-5 text-[#4c9baf]" />
       case 'logo_text':
-        return <Settings className="w-5 h-5 text-green-600" />
+        return <Settings className="w-5 h-5 text-[#4c9baf]" />
       default:
-        return <Settings className="w-5 h-5 text-green-600" />
+        return <Settings className="w-5 h-5 text-[#4c9baf]" />
     }
   }
 
@@ -191,7 +191,7 @@ export default function SettingsPage() {
         <button
           onClick={handleSaveSettings}
           disabled={isSaving}
-          className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors duration-200 flex items-center gap-2 disabled:opacity-50"
+          className="bg-[#4c9baf] text-white px-4 py-2 rounded-lg hover:bg-gren-700 transition-colors duration-200 flex items-center gap-2 disabled:opacity-50"
         >
           {isSaving ? (
             <>
@@ -211,7 +211,7 @@ export default function SettingsPage() {
       {showSuccess && (
         <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center gap-3">
           <div className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center">
-            <Save className="w-3 h-3 text-green-600" />
+            <Save className="w-3 h-3 text-[#4c9baf]" />
           </div>
           <p className="text-green-800 font-medium">Settings saved successfully!</p>
         </div>
@@ -221,7 +221,7 @@ export default function SettingsPage() {
         {/* Site Settings */}
         <div className="bg-white border border-gray-200 rounded-lg p-6">
           <div className="flex items-center gap-2 mb-6">
-            <Settings className="w-5 h-5 text-green-600" />
+            <Settings className="w-5 h-5 text-[#4c9baf]" />
             <h2 className="text-lg font-semibold text-gray-900">Site Settings</h2>
           </div>
           
@@ -252,7 +252,7 @@ export default function SettingsPage() {
         {/* Section Visibility */}
         <div className="bg-white border border-gray-200 rounded-lg p-6">
           <div className="flex items-center gap-2 mb-6">
-            <Eye className="w-5 h-5 text-green-600" />
+            <Eye className="w-5 h-5 text-[#4c9baf]" />
             <h2 className="text-lg font-semibold text-gray-900">Section Visibility</h2>
           </div>
           
