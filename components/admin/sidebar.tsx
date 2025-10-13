@@ -2,40 +2,129 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { 
+  Home, 
+  User, 
+  Briefcase, 
+  Code, 
+  Building, 
+  FolderOpen, 
+  Quote, 
+  Link as LinkIcon, 
+  Mail, 
+  Settings, 
+  ExternalLink,
+  Languages,
+  Search
+} from "lucide-react"
+
+interface AdminSidebarProps {
+  isOpen?: boolean
+  onClose?: () => void
+}
 
 const navItems = [
-  { href: "/admin", label: "Dashboard", icon: "fa-home" },
-  { href: "/admin/personal-info", label: "Personal Info", icon: "fa-user" },
-  { href: "/admin/services", label: "Services", icon: "fa-briefcase" },
-  { href: "/admin/skills", label: "Skills", icon: "fa-code" },
-  { href: "/admin/experience", label: "Experience", icon: "fa-building" },
-  { href: "/admin/projects", label: "Projects", icon: "fa-folder" },
-  { href: "/admin/testimonials", label: "Testimonials", icon: "fa-quote-left" },
-  { href: "/admin/social-links", label: "Social Links", icon: "fa-link" },
+  { href: "/admin", label: "Dashboard", icon: Home },
+  { href: "/admin/search", label: "Search", icon: Search },
+  { href: "/admin/personal-info", label: "Personal Info", icon: User },
+  { href: "/admin/services", label: "Services", icon: Briefcase },
+  { href: "/admin/skills", label: "Skills", icon: Code },
+  { href: "/admin/languages", label: "Languages", icon: Languages },
+  { href: "/admin/experience", label: "Experience", icon: Building },
+  { href: "/admin/projects", label: "Projects", icon: FolderOpen },
+  { href: "/admin/testimonials", label: "Testimonials", icon: Quote },
+  { href: "/admin/social-links", label: "Social Links", icon: LinkIcon },
+  { href: "/admin/messages", label: "Messages", icon: Mail },
 ]
 
-export default function AdminSidebar() {
+export default function AdminSidebar({ isOpen = false, onClose }: AdminSidebarProps) {
   const pathname = usePathname()
 
   return (
-    <aside className="fixed left-0 top-[73px] h-[calc(100vh-73px)] w-64 bg-[#1a1a1a] border-r border-[#2a2a2a] overflow-y-auto">
-      <nav className="p-4 space-y-2">
-        {navItems.map((item) => {
-          const isActive = pathname === item.href
-          return (
+    <>
+      {/* Mobile overlay */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+          onClick={onClose}
+        />
+      )}
+      
+      {/* Sidebar */}
+      <aside className={`
+        fixed left-0 top-[73px] h-[calc(100vh-73px)] w-64 bg-white border-r border-gray-200 overflow-y-auto z-50
+        transform transition-transform duration-300 ease-in-out
+        md:translate-x-0
+        ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+      `}>
+      <div className="p-4">
+        <div className="mb-6">
+          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">Navigation</h2>
+        </div>
+        
+        <nav className="space-y-1">
+          {navItems.map((item) => {
+            const isActive = pathname === item.href
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={onClose}
+                className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors duration-200 ${
+                  isActive 
+                    ? "bg-green-50 text-green-700 border-r-2 border-green-600" 
+                    : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+                }`}
+              >
+                <div className={`w-5 h-5 flex items-center justify-center ${
+                  isActive ? "text-green-600" : "text-gray-400"
+                }`}>
+                  <item.icon className="w-4 h-4" />
+                </div>
+                <span className="font-medium text-sm">{item.label}</span>
+              </Link>
+            )
+          })}
+        </nav>
+
+        {/* Bottom Section */}
+        <div className="mt-8 pt-4 border-t border-gray-200">
+          <div className="space-y-1">
             <Link
-              key={item.href}
-              href={item.href}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                isActive ? "bg-[#00d4ff] text-black" : "text-gray-300 hover:bg-[#2a2a2a] hover:text-white"
-              }`}
+              href="/admin/profile"
+              onClick={onClose}
+              className="flex items-center gap-3 px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors duration-200"
             >
-              <i className={`fas ${item.icon} w-5`}></i>
-              <span className="font-medium">{item.label}</span>
+              <div className="w-5 h-5 flex items-center justify-center text-gray-400">
+                <User className="w-4 h-4" />
+              </div>
+              <span className="font-medium text-sm">Profile</span>
             </Link>
-          )
-        })}
-      </nav>
+            <Link
+              href="/admin/settings"
+              onClick={onClose}
+              className="flex items-center gap-3 px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors duration-200"
+            >
+              <div className="w-5 h-5 flex items-center justify-center text-gray-400">
+                <Settings className="w-4 h-4" />
+              </div>
+              <span className="font-medium text-sm">Settings</span>
+            </Link>
+            <Link
+              href="/"
+              target="_blank"
+              onClick={onClose}
+              className="flex items-center gap-3 px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors duration-200"
+            >
+              <div className="w-5 h-5 flex items-center justify-center text-gray-400">
+                <ExternalLink className="w-4 h-4" />
+              </div>
+              <span className="font-medium text-sm">View Site</span>
+            </Link>
+          </div>
+        </div>
+      </div>
     </aside>
+    </>
   )
 }

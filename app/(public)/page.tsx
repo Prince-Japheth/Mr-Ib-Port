@@ -7,8 +7,36 @@ import { ServicesSection } from "@/components/services-section"
 import { HardSkillsSection } from "@/components/hard-skills-section"
 import { ExperienceSection } from "@/components/experience-section"
 import { ReviewsSection } from "@/components/reviews-section"
+import { createClient } from "@/lib/supabase/server"
 
-export default function Home() {
+export default async function Home() {
+  const supabase = await createClient()
+  
+  // Fetch user profile data and section visibility
+  const [
+    { data: userProfile, error: profileError },
+    { data: sectionVisibility, error: visibilityError }
+  ] = await Promise.all([
+    supabase
+      .from('user_profile')
+      .select('*')
+      .single(),
+    supabase
+      .from('section_visibility')
+      .select('section_name, is_visible')
+      .eq('is_visible', true)
+  ])
+
+  if (profileError) {
+    console.error('Error fetching user profile:', profileError)
+  }
+
+  if (visibilityError) {
+    console.error('Error fetching section visibility:', visibilityError)
+  }
+
+  // Create a set of visible sections for easy lookup
+  const visibleSections = new Set(sectionVisibility?.map(s => s.section_name) || [])
   return (
     <div className="mil-wrapper" id="top">
       <Frame />
@@ -23,11 +51,11 @@ export default function Home() {
               <div className="mil-banner-title">
                 <div className="mil-upper mil-dark mil-up mil-mb-30">Hello! My name is</div>
                 <h1 className="mil-up mil-mb-30">
-                  John
+                  {userProfile?.first_name}
                   <br />
-                  Doe
+                  {userProfile?.last_name}
                 </h1>
-                <p className="mil-upper mil-dark mil-up">Software Engineer</p>
+                <p className="mil-upper mil-dark mil-up">{userProfile?.title}</p>
               </div>
               <div className="mil-up mil-oval-frame">
                 <div className="mil-circle-text">
@@ -77,47 +105,49 @@ export default function Home() {
             {/* banner end */}
 
             {/* about */}
-            <section id="about" className="mil-p-0-90">
-              <div className="mil-oval-frame-2 mil-mb-90">
-                <img style={{backgroundColor: "white", padding: "20px",}} src="https://imgproxy.attic.sh/insecure/f:webp/q:90/w:1920/plain/https://attic.sh/w2wnxqdd1eyw3kw01bzg2u2arva1" alt="avatar" />
-              </div>
-              <div className="row justify-content-center">
-                <div className="col-lg-8">
-                  <div className="mil-center">
-                    <h2 className="mil-up mil-mb-30">
-                      Hi! My name is John, <br />
-                      i'm Software Engineer based in Toronto
-                    </h2>
-                    <div className="mil-quote mil-up mil-mb-30">
-                      <i className="fas fa-quote-left"></i>
+            {visibleSections.has('about_section') && (
+              <section id="about" className="mil-p-0-90">
+                <div className="mil-oval-frame-2 mil-mb-90">
+                  <img 
+                    style={{backgroundColor: "white", padding: "20px",}} 
+                    src={userProfile?.avatar_url} 
+                    alt="avatar" 
+                  />
+                </div>
+                <div className="row justify-content-center">
+                  <div className="col-lg-8">
+                    <div className="mil-center">
+                      <h2 className="mil-up mil-mb-30">
+                        Hi! My name is {userProfile?.first_name}, <br />
+                        i'm {userProfile?.title} based in {userProfile?.location}
+                      </h2>
+                      <div className="mil-quote mil-up mil-mb-30">
+                        <i className="fas fa-quote-left"></i>
+                      </div>
+                      <p className="mil-up mil-mb-30">
+                        {userProfile?.bio}
+                      </p>
+                      <img src={userProfile?.signature_image_url} alt="signature" className="mil-up mil-sign" />
                     </div>
-                    <p className="mil-up mil-mb-30">
-                      I am a passionate and dedicated software engineer with expertise in JavaScript, PHP Laravel, and
-                      modern web technologies. I thrive on building scalable applications and solving complex technical
-                      challenges. With a strong foundation in full-stack development and a problem-solving mindset, I
-                      deliver robust solutions that drive business growth. Let's collaborate to bring your digital ideas
-                      to life!
-                    </p>
-                    <img src="/images/sign.png" alt="signature" className="mil-up mil-sign" />
                   </div>
                 </div>
-              </div>
-            </section>
+              </section>
+            )}
             {/* about end */}
 
-            <ServicesSection />
+            {visibleSections.has('services_section') && <ServicesSection />}
 
-            <LanguageSkillsSection />
+            {visibleSections.has('language_skills_section') && <LanguageSkillsSection />}
 
-            <HardSkillsSection />
+            {visibleSections.has('hard_skills_section') && <HardSkillsSection />}
 
-            <ExperienceSection />
+            {visibleSections.has('experience_section') && <ExperienceSection />}
 
-            <ReviewsSection />
+            {visibleSections.has('reviews_section') && <ReviewsSection />}
 
             <div className="mil-divider mil-up mil-mb-90"></div>
 
-            <CTASectionSimple />
+            {visibleSections.has('contact_section') && <CTASectionSimple />}
             <PageFooter />
           </div>
         </div>

@@ -405,9 +405,7 @@ INSERT INTO section_visibility (section_name, is_visible, display_order, descrip
 INSERT INTO site_settings (setting_key, setting_value, setting_type, description) VALUES
 ('site_title', 'John Doe - Software Engineer', 'text', 'Main site title'),
 ('site_description', 'Professional portfolio of John Doe, a passionate software engineer specializing in JavaScript, PHP Laravel, and modern web technologies.', 'text', 'Site meta description'),
-('copyright_text', '© 2023. John Doe. All rights reserved.', 'text', 'Copyright notice text'),
-('author_credit', 'Nazar Miller', 'text', 'Template author credit'),
-('author_url', 'https://themeforest.net/user/millerdigitaldesign/portfolio', 'text', 'Template author URL'),
+('copyright_text', 'John Doe. All rights reserved.', 'text', 'Copyright notice text'),
 ('contact_email', 'contact@johndoe.com', 'text', 'Default contact email'),
 ('contact_phone', '+1 (555) 123-4567', 'text', 'Contact phone number'),
 ('logo_text', 'J', 'text', 'Logo text/initial');

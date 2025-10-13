@@ -3,13 +3,68 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
+import { createClient } from "@/lib/supabase/client"
+
+interface SocialLink {
+  id: number
+  platform: string
+  url: string
+  icon_class: string
+  display_order: number
+  is_active: boolean
+}
 
 export function Frame() {
   const pathname = usePathname()
   const [mounted, setMounted] = useState(false)
+  const [logoText, setLogoText] = useState("J")
+  const [socialLinks, setSocialLinks] = useState<SocialLink[]>([])
+  const [contactEmail, setContactEmail] = useState("")
 
   useEffect(() => {
     setMounted(true)
+    
+    // Fetch site settings and social links
+    const fetchData = async () => {
+      try {
+        const supabase = createClient()
+        
+        // Fetch logo text and contact email from site settings
+        const { data: settings, error: settingsError } = await supabase
+          .from('site_settings')
+          .select('setting_key, setting_value')
+          .in('setting_key', ['logo_text', 'contact_email'])
+
+        if (settingsError) {
+          console.error('Error fetching site settings:', settingsError)
+        } else if (settings) {
+          settings.forEach(setting => {
+            if (setting.setting_key === 'logo_text') {
+              setLogoText(setting.setting_value || 'J')
+            } else if (setting.setting_key === 'contact_email') {
+              setContactEmail(setting.setting_value || '')
+            }
+          })
+        }
+
+        // Fetch social links
+        const { data: links, error: linksError } = await supabase
+          .from('social_links')
+          .select('*')
+          .eq('is_active', true)
+          .order('display_order', { ascending: true })
+
+        if (linksError) {
+          console.error('Error fetching social links:', linksError)
+        } else {
+          setSocialLinks(links || [])
+        }
+      } catch (error) {
+        console.error('Error fetching frame data:', error)
+      }
+    }
+
+    fetchData()
   }, [])
 
   const isActive = (path: string) => {
@@ -31,7 +86,7 @@ export function Frame() {
       {/* top bar */}
       <div className="mil-top-panel">
         <Link href="/" className="mil-logo">
-          <span className="mil-dot">J</span>
+          <span className="mil-dot">{logoText}</span>
         </Link>
 
         <div className="mil-navigation">
@@ -51,7 +106,10 @@ export function Frame() {
         </div>
 
         <div className="mil-top-panel-btns">
-          <Link href="/contact" className="mil-contact-btn">
+          <Link 
+            href={contactEmail ? `mailto:${contactEmail}` : "/contact"} 
+            className="mil-contact-btn"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
@@ -79,26 +137,20 @@ export function Frame() {
         <div className="mil-page-name mil-upper mil-dark">{getPageName()}</div>
 
         <ul className="mil-social-icons">
-          <li>
-            <a href="#" target="_blank" className="social-icon" rel="noreferrer">
-              <i className="fab fa-behance"></i>
-            </a>
-          </li>
-          <li>
-            <a href="#" target="_blank" className="social-icon" rel="noreferrer">
-              <i className="fab fa-dribbble"></i>
-            </a>
-          </li>
-          <li>
-            <a href="#" target="_blank" className="social-icon" rel="noreferrer">
-              <i className="fab fa-twitter"></i>
-            </a>
-          </li>
-          <li>
-            <a href="#" target="_blank" className="social-icon" rel="noreferrer">
-              <i className="fab fa-github"></i>
-            </a>
-          </li>
+          {socialLinks.length > 0 ? (
+            socialLinks.map((link) => (
+              <li key={link.id}>
+                <a 
+                  href={link.url} 
+                  target="_blank" 
+                  className="social-icon" 
+                  rel="noreferrer"
+                >
+                  <i className={link.icon_class}></i>
+                </a>
+              </li>
+            ))
+          ) : null}
         </ul>
       </div>
       {/* left bar end */}

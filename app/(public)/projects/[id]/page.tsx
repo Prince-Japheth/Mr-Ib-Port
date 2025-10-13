@@ -1,9 +1,66 @@
 import { Frame } from "@/components/frame"
 import { RightBanner } from "@/components/right-banner"
 import { PageFooter } from "@/components/page-footer"
+import { createClient } from "@/lib/supabase/server"
 import Link from "next/link"
+import { notFound } from "next/navigation"
 
-export default function ProjectDetailPage({ params }: { params: { id: string } }) {
+export default async function ProjectDetailPage({ params }: { params: { id: string } }) {
+  const supabase = await createClient()
+  
+  // Fetch project data from Supabase
+  const { data: project, error: projectError } = await supabase
+    .from('projects')
+    .select('*')
+    .eq('id', params.id)
+    .eq('is_active', true)
+    .single()
+
+  if (projectError || !project) {
+    notFound()
+  }
+
+  // Fetch project images
+  const { data: projectImages, error: imagesError } = await supabase
+    .from('project_images')
+    .select('*')
+    .eq('project_id', params.id)
+    .eq('is_active', true)
+    .order('display_order', { ascending: true })
+
+  if (imagesError) {
+    console.error('Error fetching project images:', imagesError)
+  }
+
+  // Fetch project technologies
+  const { data: technologies, error: techError } = await supabase
+    .from('project_technologies')
+    .select('technology_name')
+    .eq('project_id', params.id)
+    .order('technology_name', { ascending: true })
+
+  if (techError) {
+    console.error('Error fetching project technologies:', techError)
+  }
+
+  // Fetch similar projects (any random two projects excluding current one)
+  const { data: similarProjects, error: similarError } = await supabase
+    .from('projects')
+    .select('id, title, category, featured_image_url')
+    .neq('id', params.id)
+    .eq('is_active', true)
+    .order('display_order', { ascending: true })
+    .limit(2)
+
+  if (similarError) {
+    console.error('Error fetching similar projects:', similarError)
+  }
+
+  // Format project date
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString)
+    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' })
+  }
   return (
     <div className="mil-wrapper" id="top">
       <Frame />
@@ -17,17 +74,21 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
               <div className="mil-banner-top mil-up"></div>
               <div className="mil-banner-title">
                 <ul className="mil-puplication-details mil-up mil-mb-60">
-                  <li>
-                    <span className="mil-upper mil-dark">Client: </span>&nbsp;&nbsp;
-                    <span className="mil-upper">TechCorp Solutions</span>
-                  </li>
-                  <li>
-                    <span className="mil-upper mil-dark">Date: </span>&nbsp;&nbsp;
-                    <span className="mil-upper">March 2023</span>
-                  </li>
-                  <li className="mil-upper mil-accent">Full-Stack Development</li>
+                  {project.client_name && (
+                    <li>
+                      <span className="mil-upper mil-dark">Client: </span>&nbsp;&nbsp;
+                      <span className="mil-upper">{project.client_name}</span>
+                    </li>
+                  )}
+                  {project.project_date && (
+                    <li>
+                      <span className="mil-upper mil-dark">Date: </span>&nbsp;&nbsp;
+                      <span className="mil-upper">{formatDate(project.project_date)}</span>
+                    </li>
+                  )}
+                  <li className="mil-upper mil-accent">{project.category}</li>
                 </ul>
-                <h1 className="mil-h1-sm mil-up mil-mb-60">E-Commerce Platform</h1>
+                <h1 className="mil-h1-sm mil-up mil-mb-60">{project.title}</h1>
                 <ul className="mil-breadcrumbs mil-up">
                   <li>
                     <Link href="/">Homepage</Link>
@@ -36,7 +97,7 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
                     <Link href="/projects">Projects</Link>
                   </li>
                   <li>
-                    <Link href={`/projects/${params.id}`}>Project</Link>
+                    <Link href={`/projects/${params.id}`}>{project.title}</Link>
                   </li>
                 </ul>
               </div>
@@ -46,67 +107,111 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
             {/* project */}
             <section className="mil-p-0-30">
               <div className="row justify-content-center">
-                <div className="col-lg-9">
-                  <p className="mil-text-xl mil-dark mil-up mil-center mil-mb-90">
-                    A comprehensive e-commerce platform built with React.js frontend and Laravel backend, featuring
-                    real-time inventory management, secure payment processing, and advanced analytics dashboard. The
-                    platform handles over 10,000 daily transactions with 99.9% uptime.
-                  </p>
-                </div>
-                <div className="col-lg-12">
-                  <img src="/images/1.jpg" alt="project" style={{ width: "100%" }} className="mil-up mil-mb-30" />
-                </div>
-                <div className="col-lg-6">
-                  <img src="/images/2.jpg" alt="project" style={{ width: "100%" }} className="mil-up mil-mb-30" />
-                </div>
-                <div className="col-lg-6">
-                  <img src="/images/3.jpg" alt="project" style={{ width: "100%" }} className="mil-up mil-mb-60" />
-                </div>
+                {project.detailed_description && (
+                  <div className="col-lg-9">
+                    <p className="mil-text-xl mil-dark mil-up mil-center mil-mb-90">
+                      {project.detailed_description}
+                    </p>
+                  </div>
+                )}
+                
+                {/* Project Images */}
+                {projectImages && projectImages.length > 0 ? (
+                  projectImages.map((image, index) => {
+                    // First image takes full width
+                    if (index === 0) {
+                      return (
+                        <div key={image.id} className="col-lg-12">
+                          <img 
+                            src={image.image_url} 
+                            alt={image.alt_text || project.title} 
+                            style={{ width: "100%" }} 
+                            className="mil-up mil-mb-30" 
+                          />
+                        </div>
+                      )
+                    }
+                    // Subsequent images in pairs
+                    else if (index % 2 === 1) {
+                      return (
+                        <div key={image.id} className="col-lg-6">
+                          <img 
+                            src={image.image_url} 
+                            alt={image.alt_text || project.title} 
+                            style={{ width: "100%" }} 
+                            className="mil-up mil-mb-30" 
+                          />
+                        </div>
+                      )
+                    } else {
+                      return (
+                        <div key={image.id} className="col-lg-6">
+                          <img 
+                            src={image.image_url} 
+                            alt={image.alt_text || project.title} 
+                            style={{ width: "100%" }} 
+                            className="mil-up mil-mb-60" 
+                          />
+                        </div>
+                      )
+                    }
+                  })
+                ) : (
+                  // Fallback images if no project images
+                  <>
+                    <div className="col-lg-12">
+                      <img src="/images/1.jpg" alt="project" style={{ width: "100%" }} className="mil-up mil-mb-30" />
+                    </div>
+                    <div className="col-lg-6">
+                      <img src="/images/2.jpg" alt="project" style={{ width: "100%" }} className="mil-up mil-mb-30" />
+                    </div>
+                    <div className="col-lg-6">
+                      <img src="/images/3.jpg" alt="project" style={{ width: "100%" }} className="mil-up mil-mb-60" />
+                    </div>
+                  </>
+                )}
+
                 <div className="col-lg-6">
                   <h3 className="mil-up mil-mb-30">Technical Implementation</h3>
                 </div>
                 <div className="col-lg-6">
-                  <p className="mil-up mil-mb-15">
-                    Built with modern web technologies including React.js for the frontend, Laravel 9 for the backend
-                    API, and MySQL for database management.
-                  </p>
-                  <p className="mil-up mil-mb-30">
-                    Implemented advanced features like real-time notifications using WebSockets, payment integration
-                    with Stripe, and comprehensive admin dashboard with analytics. The application uses JWT
-                    authentication, Redis for caching, and Docker for deployment.
-                  </p>
-                  <a
-                    href="https://github.com/johndoe"
-                    target="_blank"
-                    className="mil-link mil-up mil-mb-60"
-                    rel="noreferrer"
-                  >
-                    <span>View on GitHub</span>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="feather feather-arrow-right"
+                  {project.description && (
+                    <p className="mil-up mil-mb-15">
+                      {project.description}
+                    </p>
+                  )}
+                  
+                  {technologies && technologies.length > 0 && (
+                    <p className="mil-up mil-mb-30">
+                      <strong>Technologies used:</strong> {technologies.map(t => t.technology_name).join(', ')}
+                    </p>
+                  )}
+                  
+                  {project.github_url && (
+                    <a
+                      href={project.github_url}
+                      target="_blank"
+                      className="mil-link mil-up mil-mb-60"
+                      rel="noreferrer"
                     >
-                      <line x1="5" y1="12" x2="19" y2="12"></line>
-                      <polyline points="12 5 19 12 12 19"></polyline>
-                    </svg>
-                  </a>
-                </div>
-                <div className="col-lg-12">
-                  <img src="/images/1_1.jpg" alt="project" style={{ width: "100%" }} className="mil-up mil-mb-30" />
-                </div>
-                <div className="col-lg-6">
-                  <img src="/images/2_1.jpg" alt="project" style={{ width: "100%" }} className="mil-up mil-mb-30" />
-                </div>
-                <div className="col-lg-6">
-                  <img src="/images/3_1.jpg" alt="project" style={{ width: "100%" }} className="mil-up mil-mb-60" />
+                      <span>View on GitHub</span>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="feather feather-arrow-right"
+                      >
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                      </svg>
+                    </a>
+                  )}
                 </div>
               </div>
             </section>
@@ -118,70 +223,47 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
             </div>
 
             {/* similar projects */}
-            <section className="mil-p-90-30">
-              <div className="row justify-content-between align-items-center">
-                <div className="col-lg-6">
-                  <Link href="/projects/2" className="mil-portfolio-item mil-mb-60">
-                    <div className="mil-cover-frame mil-up">
-                      <img src="/images/2.jpg" alt="cover" />
+            {similarProjects && similarProjects.length > 0 && (
+              <section className="mil-p-90-30">
+                <div className="row justify-content-between align-items-center">
+                  {similarProjects.map((similarProject) => (
+                    <div key={similarProject.id} className="col-lg-6">
+                      <Link href={`/projects/${similarProject.id}`} className="mil-portfolio-item mil-mb-60">
+                        <div className="mil-cover-frame mil-up">
+                          <img 
+                            src={similarProject.featured_image_url || "/placeholder.svg"} 
+                            alt={similarProject.title} 
+                          />
+                        </div>
+                        <div className="mil-description mil-up">
+                          <div>
+                            <p className="mil-upper mil-mb-5">{similarProject.category}</p>
+                            <h4>{similarProject.title}</h4>
+                          </div>
+                          <div className="mil-link mil-icon-link">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="24"
+                              height="24"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              className="feather feather-arrow-right"
+                            >
+                              <line x1="5" y1="12" x2="19" y2="12"></line>
+                              <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                          </div>
+                        </div>
+                      </Link>
                     </div>
-                    <div className="mil-description mil-up">
-                      <div>
-                        <p className="mil-upper mil-mb-5">API</p>
-                        <h4>REST API Service</h4>
-                      </div>
-                      <div className="mil-link mil-icon-link">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="feather feather-arrow-right"
-                        >
-                          <line x1="5" y1="12" x2="19" y2="12"></line>
-                          <polyline points="12 5 19 12 12 19"></polyline>
-                        </svg>
-                      </div>
-                    </div>
-                  </Link>
+                  ))}
                 </div>
-                <div className="col-lg-6">
-                  <Link href="/projects/5" className="mil-portfolio-item mil-mb-60">
-                    <div className="mil-cover-frame mil-up">
-                      <img src="/images/3.jpg" alt="cover" />
-                    </div>
-                    <div className="mil-description mil-up">
-                      <div>
-                        <p className="mil-upper mil-mb-5">Laravel</p>
-                        <h4>CRM System</h4>
-                      </div>
-                      <div className="mil-link mil-icon-link">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="feather feather-arrow-right"
-                        >
-                          <line x1="5" y1="12" x2="19" y2="12"></line>
-                          <polyline points="12 5 19 12 12 19"></polyline>
-                        </svg>
-                      </div>
-                    </div>
-                  </Link>
-                </div>
-              </div>
-            </section>
+              </section>
+            )}
             {/* similar projects end */}
 
             <div className="mil-divider mil-up mil-mb-90"></div>
@@ -207,7 +289,7 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
           </div>
         </div>
 
-        <RightBanner backgroundImage="/images/1.jpg" showPerson={false} />
+        <RightBanner backgroundImage={project.featured_image_url || "/images/1.jpg"} showPerson={false} />
       </div>
       {/* content end */}
     </div>

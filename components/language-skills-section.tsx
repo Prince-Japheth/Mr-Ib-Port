@@ -1,9 +1,46 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
+import { createClient } from "@/lib/supabase/client"
+
+interface LanguageSkill {
+  id: number
+  language: string
+  proficiency_percentage: number
+  display_order: number
+  is_active: boolean
+}
 
 export function LanguageSkillsSection() {
+  const [languageSkills, setLanguageSkills] = useState<LanguageSkill[]>([])
+  const [loading, setLoading] = useState(true)
   
+  useEffect(() => {
+    // Fetch language skills data from Supabase
+    const fetchLanguageSkills = async () => {
+      try {
+        const supabase = createClient()
+        const { data, error } = await supabase
+          .from('language_skills')
+          .select('*')
+          .eq('is_active', true)
+          .order('display_order', { ascending: true })
+
+        if (error) {
+          console.error('Error fetching language skills:', error)
+        } else {
+          setLanguageSkills(data || [])
+        }
+      } catch (error) {
+        console.error('Error fetching language skills:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchLanguageSkills()
+  }, [])
+
   useEffect(() => {
     // Ensure circular progress animations are initialized for this specific component
     const initCircularProgress = () => {
@@ -64,7 +101,27 @@ export function LanguageSkillsSection() {
       clearTimeout(timer2)
       clearTimeout(timer3)
     }
-  }, [])
+  }, [languageSkills])
+
+  if (loading) {
+    return (
+      <>
+        <div className="mil-section-title mil-up">
+          <div className="mil-divider"></div>
+          <h3>Language Skills</h3>
+        </div>
+        <section className="mil-lang-skills mil-p-90-60">
+          <div className="row justify-content-center">
+            <div className="col-12">
+              <div className="mil-center">
+                <p>Loading language skills...</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </>
+    )
+  }
 
   return (
     <>
@@ -76,58 +133,29 @@ export function LanguageSkillsSection() {
       {/* language */}
       <section className="mil-lang-skills mil-p-90-60">
         <div className="row justify-content-between align-items-center">
-          <div className="col-6 col-lg-3">
-            <div className="mil-lang-skills-item mil-center mil-up mil-mb-30">
-              <div className="mil-circular-progress" data-value="95%">
-                <div className="mil-counter-frame mil-upper mil-dark">
-                  <span className="mil-counter" data-number="95">
-                    95
-                  </span>
-                  <span>%</span>
+          {languageSkills.length > 0 ? (
+            languageSkills.map((skill) => (
+              <div key={skill.id} className="col-6 col-lg-3">
+                <div className="mil-lang-skills-item mil-center mil-up mil-mb-30">
+                  <div className="mil-circular-progress" data-value={`${skill.proficiency_percentage}%`}>
+                    <div className="mil-counter-frame mil-upper mil-dark">
+                      <span className="mil-counter" data-number={skill.proficiency_percentage}>
+                        {skill.proficiency_percentage}
+                      </span>
+                      <span>%</span>
+                    </div>
+                  </div>
+                  <h6 className="mil-up">{skill.language}</h6>
                 </div>
               </div>
-              <h6 className="mil-up">English</h6>
-            </div>
-          </div>
-          <div className="col-6 col-lg-3">
-            <div className="mil-lang-skills-item mil-center mil-up mil-mb-30">
-              <div className="mil-circular-progress" data-value="85%">
-                <div className="mil-counter-frame mil-upper mil-dark">
-                  <span className="mil-counter" data-number="85">
-                    85
-                  </span>
-                  <span>%</span>
-                </div>
+            ))
+          ) : (
+            <div className="col-12">
+              <div className="mil-center">
+                <p className="mil-text-lg">No language skills available at the moment.</p>
               </div>
-              <h6 className="mil-up">French</h6>
             </div>
-          </div>
-          <div className="col-6 col-lg-3">
-            <div className="mil-lang-skills-item mil-center mil-up mil-mb-30">
-              <div className="mil-circular-progress" data-value="60%">
-                <div className="mil-counter-frame mil-upper mil-dark">
-                  <span className="mil-counter" data-number="60">
-                    60
-                  </span>
-                  <span>%</span>
-                </div>
-              </div>
-              <h6 className="mil-up">Spanish</h6>
-            </div>
-          </div>
-          <div className="col-6 col-lg-3">
-            <div className="mil-lang-skills-item mil-center mil-up mil-mb-30">
-              <div className="mil-circular-progress" data-value="40%">
-                <div className="mil-counter-frame mil-upper mil-dark">
-                  <span className="mil-counter" data-number="40">
-                    40
-                  </span>
-                  <span>%</span>
-                </div>
-              </div>
-              <h6 className="mil-up">German</h6>
-            </div>
-          </div>
+          )}
         </div>
       </section>
       {/* language end */}

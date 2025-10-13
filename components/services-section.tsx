@@ -1,9 +1,48 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
+import { createClient } from "@/lib/supabase/client"
+
+interface Service {
+  id: number
+  title: string
+  description: string
+  icon_url: string
+  link_url: string
+  display_order: number
+  is_active: boolean
+}
 
 export function ServicesSection() {
+  const [services, setServices] = useState<Service[]>([])
+  const [loading, setLoading] = useState(true)
   
+  useEffect(() => {
+    // Fetch services data from Supabase
+    const fetchServices = async () => {
+      try {
+        const supabase = createClient()
+        const { data, error } = await supabase
+          .from('services')
+          .select('*')
+          .eq('is_active', true)
+          .order('display_order', { ascending: true })
+
+        if (error) {
+          console.error('Error fetching services:', error)
+        } else {
+          setServices(data || [])
+        }
+      } catch (error) {
+        console.error('Error fetching services:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchServices()
+  }, [])
+
   useEffect(() => {
     // Ensure scroll animations are initialized for this specific component
     const initScrollAnimations = () => {
@@ -51,110 +90,65 @@ export function ServicesSection() {
       clearTimeout(timer2)
       clearTimeout(timer3)
     }
-  }, [])
+  }, [services])
+
+  if (loading) {
+    return (
+      <>
+        <div className="mil-section-title mil-up">
+          <div className="mil-divider"></div>
+          <h3>Services</h3>
+        </div>
+        <section className="mil-p-90-30 mil-services-section">
+          <div className="row justify-content-center">
+            <div className="col-12">
+              <div className="mil-center">
+                <p>Loading services...</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </>
+    )
+  }
 
   return (
     <>
       <div className="mil-section-title mil-up">
         <div className="mil-divider"></div>
         <h3>Services</h3>
-        </div>
+      </div>
 
       {/* services */}
       <section className="mil-p-90-30 mil-services-section">
         <div className="row justify-content-between align-items-center">
-          <div className="col-lg-4">
-            <div className="mil-icon-box mil-center mil-mb-60">
-              <div className="mil-service-icon mil-up">
-                <img src="/images/1.svg" alt="icon" className="mil-mb-30" />
+          {services.length > 0 ? (
+            services.map((service) => (
+              <div key={service.id} className="col-lg-4">
+                <div className="mil-icon-box mil-center mil-mb-60">
+                  <div className="mil-service-icon mil-up">
+                    <img 
+                      src={service.icon_url} 
+                      alt={service.title} 
+                      className="mil-mb-30" 
+                    />
+                  </div>
+                  <h5 className="mil-up mil-mb-30">{service.title}</h5>
+                  <p className="mil-up mil-mb-30">
+                    {service.description}
+                  </p>
+                </div>
               </div>
-              <h5 className="mil-up mil-mb-30">Full-Stack Development</h5>
-              <p className="mil-up mil-mb-30">
-                Build robust web applications with modern JavaScript frameworks and PHP Laravel backend solutions
-              </p>
-              <div className="mil-up">
-                <a href="/service" className="mil-link mil-icon-link">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="feather feather-arrow-right"
-                  >
-                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                    <polyline points="12 5 19 12 12 19"></polyline>
-                  </svg>
-                </a>
+            ))
+          ) : (
+            <div className="col-12">
+              <div className="mil-center">
+                <p className="mil-text-lg">No services available at the moment.</p>
               </div>
             </div>
-          </div>
-          <div className="col-lg-4">
-            <div className="mil-icon-box mil-center mil-mb-60">
-              <div className="mil-service-icon mil-up">
-                <img src="/images/2.svg" alt="icon" className="mil-mb-30" />
-              </div>
-              <h5 className="mil-up mil-mb-30">API Development</h5>
-              <p className="mil-up mil-mb-30">
-                Create scalable REST APIs and microservices using Laravel and modern backend technologies.
-              </p>
-              <div className="mil-up">
-                <a href="/service" className="mil-link mil-icon-link">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="feather feather-arrow-right"
-                  >
-                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                    <polyline points="12 5 19 12 12 19"></polyline>
-                  </svg>
-                </a>
-              </div>
-            </div>
-          </div>
-          <div className="col-lg-4">
-            <div className="mil-icon-box mil-center mil-mb-60">
-              <div className="mil-service-icon mil-up">
-                <img src="/images/3.svg" alt="icon" className="mil-mb-30" />
-              </div>
-              <h5 className="mil-up mil-mb-30">Database Design</h5>
-              <p className="mil-up mil-mb-30">
-                Design and optimize database schemas with MySQL, MongoDB, and other modern database solutions.
-              </p>
-              <div className="mil-up">
-                <a href="/service" className="mil-link mil-icon-link">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="feather feather-arrow-right"
-                  >
-                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                    <polyline points="12 5 19 12 12 19"></polyline>
-                  </svg>
-                </a>
-              </div>
-            </div>
-          </div>
-      </div>
-    </section>
+          )}
+        </div>
+      </section>
       {/* services end */}
     </>
   )

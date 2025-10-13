@@ -1,9 +1,40 @@
 import { Frame } from "@/components/frame"
 import { RightBanner } from "@/components/right-banner"
 import { PageFooter } from "@/components/page-footer"
+import { createClient } from "@/lib/supabase/server"
 import Link from "next/link"
 
-export default function ContactPage() {
+interface ContactPageProps {
+  searchParams: {
+    success?: string
+  }
+}
+
+export default async function ContactPage({ searchParams }: ContactPageProps) {
+  const supabase = await createClient()
+  
+  // Await searchParams
+  const params = await searchParams
+  
+  // Fetch contact information from site settings
+  const { data: contactEmail, error: emailError } = await supabase
+    .from('site_settings')
+    .select('setting_value')
+    .eq('setting_key', 'contact_email')
+    .single()
+
+  const { data: contactPhone, error: phoneError } = await supabase
+    .from('site_settings')
+    .select('setting_value')
+    .eq('setting_key', 'contact_phone')
+    .single()
+
+  if (emailError) {
+    console.error('Error fetching contact email:', emailError)
+  }
+  if (phoneError) {
+    console.error('Error fetching contact phone:', phoneError)
+  }
   return (
     <div className="mil-wrapper" id="top">
       <Frame />
@@ -37,7 +68,38 @@ export default function ContactPage() {
                     Have a project in mind? Let's work together to bring your ideas to life.
                   </p>
 
-                  <form className="mil-contact-form mil-up">
+                  {/* Success Message */}
+                  {params.success === 'true' && (
+                    <div className="mil-alert mil-success mil-up mil-center mil-mb-60">
+                      <p>Thank you for your message! I'll get back to you soon.</p>
+                    </div>
+                  )}
+
+                  {/* Contact Information */}
+                  <div className="row mil-mb-60">
+                    <div className="col-lg-6">
+                      <div className="mil-contact-info mil-up mil-center">
+                        <h4 className="mil-mb-15">Email</h4>
+                        <p>
+                          <a href={`mailto:${contactEmail?.setting_value || 'contact@johndoe.com'}`}>
+                            {contactEmail?.setting_value || 'contact@johndoe.com'}
+                          </a>
+                        </p>
+                      </div>
+                    </div>
+                    <div className="col-lg-6">
+                      <div className="mil-contact-info mil-up mil-center">
+                        <h4 className="mil-mb-15">Phone</h4>
+                        <p>
+                          <a href={`tel:${contactPhone?.setting_value || '+1 (555) 123-4567'}`}>
+                            {contactPhone?.setting_value || '+1 (555) 123-4567'}
+                          </a>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <form className="mil-contact-form mil-up" action="/api/contact" method="POST">
                     <div className="row">
                       <div className="col-lg-6">
                         <div className="mil-input-frame mil-mb-30">
@@ -45,7 +107,12 @@ export default function ContactPage() {
                             <span>Name</span>
                             <span className="mil-required">*</span>
                           </label>
-                          <input type="text" placeholder="Your name" required />
+                          <input 
+                            type="text" 
+                            name="name"
+                            placeholder="Your name" 
+                            required 
+                          />
                         </div>
                       </div>
                       <div className="col-lg-6">
@@ -54,7 +121,12 @@ export default function ContactPage() {
                             <span>Email</span>
                             <span className="mil-required">*</span>
                           </label>
-                          <input type="email" placeholder="your.email@example.com" required />
+                          <input 
+                            type="email" 
+                            name="email"
+                            placeholder="your.email@example.com" 
+                            required 
+                          />
                         </div>
                       </div>
                       <div className="col-lg-12">
@@ -63,7 +135,12 @@ export default function ContactPage() {
                             <span>Message</span>
                             <span className="mil-required">*</span>
                           </label>
-                          <textarea placeholder="Tell me about your project..." rows={6} required></textarea>
+                          <textarea 
+                            name="message"
+                            placeholder="Tell me about your project..." 
+                            rows={6} 
+                            required
+                          ></textarea>
                         </div>
                       </div>
                       <div className="col-lg-12">

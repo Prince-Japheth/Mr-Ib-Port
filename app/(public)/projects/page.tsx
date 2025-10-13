@@ -1,19 +1,50 @@
 import { Frame } from "@/components/frame"
 import { RightBanner } from "@/components/right-banner"
 import { PageFooter } from "@/components/page-footer"
+import { createClient } from "@/lib/supabase/server"
 import Link from "next/link"
 
-export default function ProjectsPage() {
-  const projects = [
-    { id: "1", category: "Web App", title: "E-Commerce Platform", image: "/images/1.jpg" },
-    { id: "2", category: "API", title: "REST API Service", image: "/images/2.jpg" },
-    { id: "3", category: "Mobile App", title: "React Native App", image: "/images/3.jpg" },
-    { id: "4", category: "Dashboard", title: "Analytics Dashboard", image: "/images/4.jpg" },
-    { id: "5", category: "Laravel", title: "CRM System", image: "/images/5.jpg" },
-    { id: "6", category: "React", title: "Social Media App", image: "/images/6.jpg" },
-    { id: "7", category: "Node.js", title: "Real-time Chat", image: "/images/7.jpg" },
-    { id: "8", category: "Vue.js", title: "Task Management", image: "/images/8.jpg" },
+interface ProjectsPageProps {
+  searchParams: {
+    page?: string
+  }
+}
+
+export default async function ProjectsPage({ searchParams }: ProjectsPageProps) {
+  const supabase = await createClient()
+  
+  // Get current page from search params, default to 1
+  const currentPage = parseInt(searchParams.page || '1', 10)
+  const projectsPerPage = 6
+  const offset = (currentPage - 1) * projectsPerPage
+  
+  // Fetch projects data from Supabase with pagination
+  const { data: projects, error: projectsError, count } = await supabase
+    .from('projects')
+    .select('*', { count: 'exact' })
+    .eq('is_active', true)
+    .order('display_order', { ascending: true })
+    .range(offset, offset + projectsPerPage - 1)
+
+  if (projectsError) {
+    console.error('Error fetching projects:', projectsError)
+  }
+
+  // Fallback projects if database is empty
+  const fallbackProjects = [
+    { id: "1", category: "Web App", title: "E-Commerce Platform", featured_image_url: "/images/1.jpg" },
+    { id: "2", category: "API", title: "REST API Service", featured_image_url: "/images/2.jpg" },
+    { id: "3", category: "Mobile App", title: "React Native App", featured_image_url: "/images/3.jpg" },
+    { id: "4", category: "Dashboard", title: "Analytics Dashboard", featured_image_url: "/images/4.jpg" },
+    { id: "5", category: "Laravel", title: "CRM System", featured_image_url: "/images/5.jpg" },
+    { id: "6", category: "React", title: "Social Media App", featured_image_url: "/images/6.jpg" },
+    { id: "7", category: "Node.js", title: "Real-time Chat", featured_image_url: "/images/7.jpg" },
+    { id: "8", category: "Vue.js", title: "Task Management", featured_image_url: "/images/8.jpg" },
   ]
+
+  const displayProjects = projects && projects.length > 0 ? projects : fallbackProjects
+  const totalProjects = count || fallbackProjects.length
+  const totalPages = Math.ceil(totalProjects / projectsPerPage)
 
   return (
     <div className="mil-wrapper" id="top">
@@ -46,11 +77,14 @@ export default function ProjectsPage() {
             {/* portfolio */}
             <section>
               <div className="row">
-                {projects.map((project) => (
+                {displayProjects.map((project) => (
                   <div key={project.id} className="col-lg-6">
                     <Link href={`/projects/${project.id}`} className="mil-portfolio-item mil-mb-60">
                       <div className="mil-cover-frame mil-up">
-                        <img src={project.image || "/placeholder.svg"} alt="cover" />
+                        <img 
+                          src={project.featured_image_url || "/placeholder.svg"} 
+                          alt={project.title || "project cover"} 
+                        />
                       </div>
                       <div className="mil-description mil-up">
                         <div>
@@ -83,18 +117,20 @@ export default function ProjectsPage() {
                   <div className="mil-pagination mil-up">
                     <div className="mil-divider"></div>
                     <div className="mil-pagination-buttons">
-                      <a href="/projects" className="mil-pagination-btn mil-active">
-                        1
-                      </a>
-                      <a href="/projects" className="mil-pagination-btn">
-                        2
-                      </a>
-                      <a href="/projects" className="mil-pagination-btn">
-                        3
-                      </a>
-                      <a href="/projects" className="mil-pagination-btn">
-                        4
-                      </a>
+                      
+                      
+                      {/* Page numbers */}
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+                        <Link
+                          key={pageNum}
+                          href={`/projects?page=${pageNum}`}
+                          className={`mil-pagination-btn ${currentPage === pageNum ? 'mil-active' : ''}`}
+                        >
+                          {pageNum}
+                        </Link>
+                      ))}
+                      
+                    
                     </div>
                   </div>
                 </div>

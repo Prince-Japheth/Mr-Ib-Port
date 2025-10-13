@@ -1,9 +1,57 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
+import { createClient } from "@/lib/supabase/client"
+
+interface Experience {
+  id: number
+  position: string
+  company: string
+  start_date: string
+  end_date: string | null
+  is_current: boolean
+  description: string
+  display_order: number
+  is_active: boolean
+}
 
 export function ExperienceSection() {
+  const [experiences, setExperiences] = useState<Experience[]>([])
+  const [loading, setLoading] = useState(true)
+
+  // Helper function to format date range
+  const formatDateRange = (startDate: string, endDate: string | null, isCurrent: boolean) => {
+    const start = new Date(startDate).getFullYear()
+    const end = isCurrent ? 'Present' : endDate ? new Date(endDate).getFullYear() : 'Present'
+    return `${start} - ${end}`
+  }
   
+  useEffect(() => {
+    // Fetch experience data from Supabase
+    const fetchExperiences = async () => {
+      try {
+        const supabase = createClient()
+        const { data, error } = await supabase
+          .from('experience')
+          .select('*')
+          .eq('is_active', true)
+          .order('display_order', { ascending: true })
+
+        if (error) {
+          console.error('Error fetching experiences:', error)
+        } else {
+          setExperiences(data || [])
+        }
+      } catch (error) {
+        console.error('Error fetching experiences:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchExperiences()
+  }, [])
+
   useEffect(() => {
     // Ensure scroll animations are initialized for this specific component
     const initScrollAnimations = () => {
@@ -51,7 +99,27 @@ export function ExperienceSection() {
       clearTimeout(timer2)
       clearTimeout(timer3)
     }
-  }, [])
+  }, [experiences])
+
+  if (loading) {
+    return (
+      <>
+        <div className="mil-section-title mil-up">
+          <div className="mil-divider"></div>
+          <h3>Experience</h3>
+        </div>
+        <section className="mil-p-90-60 mil-experience-section">
+          <div className="row">
+            <div className="col-lg-8 offset-lg-2">
+              <div className="mil-center">
+                <p>Loading experience...</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </>
+    )
+  }
 
   return (
     <>
@@ -66,54 +134,28 @@ export function ExperienceSection() {
           <div className="col-lg-8 offset-lg-2">
             <div className="mil-timeline">
               <ul>
-                <li className="mil-up">
-                  <div className="mil-item-head">
-                    <h5 className="mil-up mil-mb-15">Senior Full-Stack Developer</h5>
-                    <div className="mil-text-sm mil-upper mil-dark">2022 - Present</div>
-                  </div>
-                  <h6 className="mil-up mil-mb-15">Tech Solutions Inc.</h6>
-                  <p className="mil-up">
-                    Led development of scalable web applications using React, Node.js, and Laravel. Managed a team
-                    of 4 developers and implemented CI/CD pipelines. Built REST APIs and microservices handling
-                    100k+ daily requests.
-                  </p>
-                </li>
-                <li className="mil-up">
-                  <div className="mil-item-head">
-                    <h5 className="mil-up mil-mb-15">Full-Stack Developer</h5>
-                    <div className="mil-text-sm mil-upper mil-dark">2020 - 2022</div>
-                  </div>
-                  <h6 className="mil-up mil-mb-15">Digital Innovation Labs</h6>
-                  <p className="mil-up">
-                    Developed full-stack web applications using JavaScript, PHP Laravel, and modern frameworks.
-                    Built responsive frontends with React and Vue.js, and designed database schemas with MySQL and
-                    MongoDB. Worked on projects ranging from e-commerce platforms to healthcare applications.
-                  </p>
-                </li>
-                <li className="mil-up">
-                  <div className="mil-item-head">
-                    <h5 className="mil-up mil-mb-15">Junior Software Developer</h5>
-                    <div className="mil-text-sm mil-upper mil-dark">2019 - 2020</div>
-                  </div>
-                  <h6 className="mil-up mil-mb-15">StartupHub Technologies</h6>
-                  <p className="mil-up">
-                    Assisted in developing web applications using JavaScript, PHP, and Laravel framework.
-                    Participated in code reviews and learned best practices for software development. Contributed
-                    to the development of reusable components and API integrations.
-                  </p>
-                </li>
-                <li className="mil-up">
-                  <div className="mil-item-head">
-                    <h5 className="mil-up mil-mb-15">Software Development Intern</h5>
-                    <div className="mil-text-sm mil-upper mil-dark">2018 - 2019</div>
-                  </div>
-                  <h6 className="mil-up mil-mb-15">Web Solutions Ltd.</h6>
-                  <p className="mil-up">
-                    Assisted in developing web applications and maintaining existing codebases. Gained experience
-                    in HTML, CSS, JavaScript, and PHP. Developed foundational skills in version control with Git
-                    and collaborative development practices.
-                  </p>
-                </li>
+                {experiences.length > 0 ? (
+                  experiences.map((experience) => (
+                    <li key={experience.id} className="mil-up">
+                      <div className="mil-item-head">
+                        <h5 className="mil-up mil-mb-15">{experience.position}</h5>
+                        <div className="mil-text-sm mil-upper mil-dark">
+                          {formatDateRange(experience.start_date, experience.end_date, experience.is_current)}
+                        </div>
+                      </div>
+                      <h6 className="mil-up mil-mb-15">{experience.company}</h6>
+                      <p className="mil-up">
+                        {experience.description}
+                      </p>
+                    </li>
+                  ))
+                ) : (
+                  <li className="mil-up">
+                    <div className="mil-center">
+                      <p className="mil-text-lg">No experience available at the moment.</p>
+                    </div>
+                  </li>
+                )}
               </ul>
             </div>
           </div>

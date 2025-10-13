@@ -1,9 +1,49 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
+import { createClient } from "@/lib/supabase/client"
+
+interface Review {
+  id: number
+  client_name: string
+  company: string
+  client_avatar_url: string
+  review_text: string
+  rating: number
+  display_order: number
+  is_active: boolean
+}
 
 export function ReviewsSection() {
+  const [reviews, setReviews] = useState<Review[]>([])
+  const [loading, setLoading] = useState(true)
   
+  useEffect(() => {
+    // Fetch reviews data from Supabase
+    const fetchReviews = async () => {
+      try {
+        const supabase = createClient()
+        const { data, error } = await supabase
+          .from('reviews')
+          .select('*')
+          .eq('is_active', true)
+          .order('display_order', { ascending: true })
+
+        if (error) {
+          console.error('Error fetching reviews:', error)
+        } else {
+          setReviews(data || [])
+        }
+      } catch (error) {
+        console.error('Error fetching reviews:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchReviews()
+  }, [])
+
   useEffect(() => {
     // Ensure scroll animations and slider are initialized for this specific component
     const initAnimations = () => {
@@ -72,7 +112,27 @@ export function ReviewsSection() {
       clearTimeout(timer2)
       clearTimeout(timer3)
     }
-  }, [])
+  }, [reviews])
+
+  if (loading) {
+    return (
+      <>
+        <div className="mil-section-title mil-up">
+          <div className="mil-divider"></div>
+          <h3>Reviews</h3>
+        </div>
+        <section className="mil-p-90-90 mil-reviews-section">
+          <div className="row justify-content-center">
+            <div className="col-12">
+              <div className="mil-center">
+                <p>Loading reviews...</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </>
+    )
+  }
 
   return (
     <>
@@ -87,57 +147,34 @@ export function ReviewsSection() {
           <div className="col-lg-8">
             <div className="swiper-container mil-reviews-slider mil-mb-30">
               <div className="swiper-wrapper">
-                <div className="swiper-slide">
-                  <div className="mil-review mil-center">
-                    <div className="mil-review-top">
-                      <img src="/images/1.jpg" alt="customer" className="mil-avatar mil-up" />
-                      <div className="mil-name">
-                        <h4 className="mil-up mil-mb-5">Paul Trueman</h4>
-                        <p className="mil-upper mil-up">TechCorp Solutions</p>
+                {reviews.length > 0 ? (
+                  reviews.map((review) => (
+                    <div key={review.id} className="swiper-slide">
+                      <div className="mil-review mil-center">
+                        <div className="mil-review-top">
+                          <img 
+                            src={review.client_avatar_url} 
+                            alt={review.client_name} 
+                            className="mil-avatar mil-up" 
+                          />
+                          <div className="mil-name">
+                            <h4 className="mil-up mil-mb-5">{review.client_name}</h4>
+                            <p className="mil-upper mil-up">{review.company}</p>
+                          </div>
+                        </div>
+                        <p className="mil-up">
+                          {review.review_text}
+                        </p>
                       </div>
                     </div>
-                    <p className="mil-up">
-                      Working with John Doe as our full-stack developer was an absolute pleasure. His technical
-                      expertise and problem-solving approach brought our complex application to life. The scalable
-                      architecture he built exceeded our expectations, and our users love the performance. Highly
-                      recommended!
-                    </p>
-                  </div>
-                </div>
-                <div className="swiper-slide">
-                  <div className="mil-review mil-center">
-                    <div className="mil-review-top">
-                      <img src="/images/2.jpg" alt="customer" className="mil-avatar mil-up" />
-                      <div className="mil-name">
-                        <h4 className="mil-up mil-mb-5">Olivia Oldman</h4>
-                        <p className="mil-upper mil-up">DataFlow Systems</p>
-                      </div>
+                  ))
+                ) : (
+                  <div className="swiper-slide">
+                    <div className="mil-review mil-center">
+                      <p className="mil-text-lg">No reviews available at the moment.</p>
                     </div>
-                    <p className="mil-up">
-                      I had the opportunity to collaborate with John, and I must say he is incredibly talented.
-                      His ability to understand our technical requirements and translate them into robust code was
-                      impressive. John's Laravel APIs were efficient, and enhanced our application performance
-                      significantly. I look forward to working with him again!
-                    </p>
                   </div>
-                </div>
-                <div className="swiper-slide">
-                  <div className="mil-review mil-center">
-                    <div className="mil-review-top">
-                      <img src="/images/3.jpg" alt="customer" className="mil-avatar mil-up" />
-                      <div className="mil-name">
-                        <h4 className="mil-up mil-mb-5">Oscar Newman</h4>
-                        <p className="mil-upper mil-up">CloudTech Ventures</p>
-                      </div>
-                    </div>
-                    <p className="mil-up">
-                      John Doe is an exceptional software engineer. He has a deep understanding of modern
-                      technologies and knows how to build scalable applications. John's React and Laravel
-                      expertise greatly improved our platform's performance, and we couldn't be happier with the
-                      results. Highly skilled and reliable!
-                    </p>
-                  </div>
-                </div>
+                )}
               </div>
             </div>
           </div>
