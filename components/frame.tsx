@@ -99,7 +99,16 @@ export function Frame() {
   return (
     <div className="mil-frame">
       {/* top bar */}
-      <div className="mil-top-panel">
+      <div 
+        className="mil-top-panel"
+        style={{
+          backgroundColor: 'rgba(255, 255, 255, 0.8)',
+          backdropFilter: 'blur(10px)',
+          WebkitBackdropFilter: 'blur(10px)',
+          borderBottom: '1px solid rgba(233, 233, 233, 0.3)',
+          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+        }}
+      >
         <NavigationLink href="/" className="mil-logo">
           <span className="mil-dot">{logoText}</span>
         </NavigationLink>
