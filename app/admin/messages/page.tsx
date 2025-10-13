@@ -79,6 +79,9 @@ export default function MessagesPage() {
       if (selectedMessage?.id === id) {
         setSelectedMessage(prev => prev ? { ...prev, is_read: true } : null)
       }
+
+      // Dispatch custom event to update sidebar notification
+      window.dispatchEvent(new CustomEvent('messageStatusChanged'))
     } catch (error) {
       console.error('Error:', error)
     }
@@ -105,6 +108,9 @@ export default function MessagesPage() {
       if (selectedMessage?.id === id) {
         setSelectedMessage(prev => prev ? { ...prev, is_read: false } : null)
       }
+
+      // Dispatch custom event to update sidebar notification
+      window.dispatchEvent(new CustomEvent('messageStatusChanged'))
     } catch (error) {
       console.error('Error:', error)
     }

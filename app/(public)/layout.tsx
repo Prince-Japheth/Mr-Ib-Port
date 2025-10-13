@@ -2,6 +2,7 @@ import React from 'react';
 import Script from "next/script"
 import NextTopLoader from "nextjs-toploader"
 import { SimpleAnimationInit } from "@/components/simple-animation-init"
+import { NavigationPreloaderProvider } from "@/components/navigation-preloader-provider"
 
 // You don't need Metadata here since the root layout provides it
 
@@ -46,7 +47,9 @@ export default function PublicLayout({
         </div>
       </div>
       
-      {children}
+      <NavigationPreloaderProvider>
+        {children}
+      </NavigationPreloaderProvider>
       
       <SimpleAnimationInit />
 

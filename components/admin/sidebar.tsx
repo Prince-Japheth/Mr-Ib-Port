@@ -2,6 +2,8 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { useState, useEffect } from "react"
+import { createClient } from "@/lib/supabase/client"
 import { 
   Home, 
   User, 
@@ -15,7 +17,12 @@ import {
   Settings, 
   ExternalLink,
   Languages,
-  Search
+  Search,
+  Tag,
+  Sparkles,
+  Upload,
+  GraduationCap,
+  Eye
 } from "lucide-react"
 
 interface AdminSidebarProps {
@@ -31,14 +38,50 @@ const navItems = [
   { href: "/admin/skills", label: "Skills", icon: Code },
   { href: "/admin/languages", label: "Languages", icon: Languages },
   { href: "/admin/experience", label: "Experience", icon: Building },
+  { href: "/admin/education", label: "Education", icon: GraduationCap },
   { href: "/admin/projects", label: "Projects", icon: FolderOpen },
+  { href: "/admin/categories", label: "Categories", icon: Tag },
+  { href: "/admin/floating-skills", label: "Floating Skills", icon: Sparkles },
+  { href: "/admin/banner-images", label: "Banner Images", icon: Upload },
   { href: "/admin/testimonials", label: "Testimonials", icon: Quote },
   { href: "/admin/social-links", label: "Social Links", icon: LinkIcon },
   { href: "/admin/messages", label: "Messages", icon: Mail },
+  { href: "/admin/section-visibility", label: "Section Visibility", icon: Eye },
 ]
 
 export default function AdminSidebar({ isOpen = false, onClose }: AdminSidebarProps) {
   const pathname = usePathname()
+  const [unreadMessageCount, setUnreadMessageCount] = useState(0)
+
+  useEffect(() => {
+    fetchUnreadMessageCount()
+    
+    // Listen for message status changes
+    const handleMessageStatusChange = () => {
+      fetchUnreadMessageCount()
+    }
+    
+    window.addEventListener('messageStatusChanged', handleMessageStatusChange)
+    
+    return () => {
+      window.removeEventListener('messageStatusChanged', handleMessageStatusChange)
+    }
+  }, [])
+
+  const fetchUnreadMessageCount = async () => {
+    try {
+      const supabase = createClient()
+      const { count, error } = await supabase
+        .from('contact_messages')
+        .select('*', { count: 'exact', head: true })
+        .eq('is_read', false)
+
+      if (error) throw error
+      setUnreadMessageCount(count || 0)
+    } catch (error) {
+      console.error('Error fetching unread message count:', error)
+    }
+  }
 
   return (
     <>
@@ -64,7 +107,10 @@ export default function AdminSidebar({ isOpen = false, onClose }: AdminSidebarPr
         
         <nav className="space-y-1">
           {navItems.map((item) => {
-            const isActive = pathname === item.href
+            // Check if current path matches or is a sub-page of this item
+            const isActive = pathname === item.href || 
+              (item.href !== '/admin' && pathname.startsWith(item.href + '/'))
+            const hasNotification = item.href === '/admin/messages' && unreadMessageCount > 0
             return (
               <Link
                 key={item.href}
@@ -76,12 +122,20 @@ export default function AdminSidebar({ isOpen = false, onClose }: AdminSidebarPr
                     : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                 }`}
               >
-                <div className={`w-5 h-5 flex items-center justify-center ${
+                <div className={`w-5 h-5 flex items-center justify-center relative ${
                   isActive ? "text-green-600" : "text-gray-400"
                 }`}>
                   <item.icon className="w-4 h-4" />
+                  {hasNotification && (
+                    <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                  )}
                 </div>
                 <span className="font-medium text-sm">{item.label}</span>
+                {hasNotification && (
+                  <span className="ml-auto bg-red-500 text-white text-xs rounded-full px-2 py-1 min-w-[20px] text-center">
+                    {unreadMessageCount > 99 ? '99+' : unreadMessageCount}
+                  </span>
+                )}
               </Link>
             )
           })}

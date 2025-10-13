@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { NavigationLink } from "./navigation-link"
 import { usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
 import { createClient } from "@/lib/supabase/client"
@@ -20,6 +21,7 @@ export function Frame() {
   const [logoText, setLogoText] = useState("J")
   const [socialLinks, setSocialLinks] = useState<SocialLink[]>([])
   const [contactEmail, setContactEmail] = useState("")
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   useEffect(() => {
     setMounted(true)
@@ -67,6 +69,11 @@ export function Frame() {
     fetchData()
   }, [])
 
+  // Close mobile menu when pathname changes
+  useEffect(() => {
+    setIsMobileMenuOpen(false)
+  }, [pathname])
+
   const isActive = (path: string) => {
     if (path === "/" && pathname === "/") return true
     if (path !== "/" && pathname.startsWith(path)) return true
@@ -80,26 +87,34 @@ export function Frame() {
     return "Homepage"
   }
 
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen)
+  }
+
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false)
+  }
+
 
   return (
     <div className="mil-frame">
       {/* top bar */}
       <div className="mil-top-panel">
-        <Link href="/" className="mil-logo">
+        <NavigationLink href="/" className="mil-logo">
           <span className="mil-dot">{logoText}</span>
-        </Link>
+        </NavigationLink>
 
-        <div className="mil-navigation">
+        <div className={`mil-navigation ${isMobileMenuOpen ? "mil-active" : ""}`}>
           <nav className="mil-menu-transition">
             <ul>
               <li className={`mil-has-children ${isActive("/") ? "mil-active" : ""}`}>
-                <Link href="/">Home</Link>
+                <NavigationLink href="/" onClick={closeMobileMenu}>Home</NavigationLink>
               </li>
               <li className={`mil-has-children ${isActive("/projects") ? "mil-active" : ""}`}>
-                <Link href="/projects">Projects</Link>
+                <NavigationLink href="/projects" onClick={closeMobileMenu}>Projects</NavigationLink>
               </li>
               <li className={isActive("/contact") ? "mil-active" : ""}>
-                <Link href="/contact">Contact</Link>
+                <NavigationLink href="/contact" onClick={closeMobileMenu}>Contact</NavigationLink>
               </li>
             </ul>
           </nav>
@@ -125,7 +140,10 @@ export function Frame() {
             </svg>
           </Link>
 
-          <div className="mil-menu-btn">
+          <div 
+            className={`mil-menu-btn ${isMobileMenuOpen ? "mil-active" : ""}`}
+            onClick={toggleMobileMenu}
+          >
             <span></span>
           </div>
         </div>

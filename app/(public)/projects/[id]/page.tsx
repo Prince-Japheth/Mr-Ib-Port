@@ -1,8 +1,10 @@
 import { Frame } from "@/components/frame"
 import { RightBanner } from "@/components/right-banner"
 import { PageFooter } from "@/components/page-footer"
+import { QRCodeComponent } from "@/components/qr-code"
 import { createClient } from "@/lib/supabase/server"
 import Link from "next/link"
+import { NavigationLink } from "@/components/navigation-link"
 import { notFound } from "next/navigation"
 
 export default async function ProjectDetailPage({ params }: { params: { id: string } }) {
@@ -61,6 +63,9 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
     const date = new Date(dateString)
     return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' })
   }
+
+  // Generate project URL for QR code
+  const projectUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/projects/${params.id}`
   return (
     <div className="mil-wrapper" id="top">
       <Frame />
@@ -91,13 +96,13 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
                 <h1 className="mil-h1-sm mil-up mil-mb-60">{project.title}</h1>
                 <ul className="mil-breadcrumbs mil-up">
                   <li>
-                    <Link href="/">Homepage</Link>
+                    <NavigationLink href="/">Homepage</NavigationLink>
                   </li>
                   <li>
-                    <Link href="/projects">Projects</Link>
+                    <NavigationLink href="/projects">Projects</NavigationLink>
                   </li>
                   <li>
-                    <Link href={`/projects/${params.id}`}>{project.title}</Link>
+                    <NavigationLink href={`/projects/${params.id}`}>{project.title}</NavigationLink>
                   </li>
                 </ul>
               </div>
@@ -156,113 +161,112 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
                       )
                     }
                   })
-                ) : (
-                  // Fallback images if no project images
-                  <>
-                    <div className="col-lg-12">
-                      <img src="/images/1.jpg" alt="project" style={{ width: "100%" }} className="mil-up mil-mb-30" />
-                    </div>
-                    <div className="col-lg-6">
-                      <img src="/images/2.jpg" alt="project" style={{ width: "100%" }} className="mil-up mil-mb-30" />
-                    </div>
-                    <div className="col-lg-6">
-                      <img src="/images/3.jpg" alt="project" style={{ width: "100%" }} className="mil-up mil-mb-60" />
-                    </div>
-                  </>
-                )}
+                ) : null}
 
-                <div className="col-lg-6">
-                  <h3 className="mil-up mil-mb-30">Technical Implementation</h3>
-                </div>
-                <div className="col-lg-6">
-                  {project.description && (
-                    <p className="mil-up mil-mb-15">
-                      {project.description}
-                    </p>
-                  )}
-                  
-                  {technologies && technologies.length > 0 && (
-                    <p className="mil-up mil-mb-30">
-                      <strong>Technologies used:</strong> {technologies.map(t => t.technology_name).join(', ')}
-                    </p>
-                  )}
-                  
-                  {project.github_url && (
-                    <a
-                      href={project.github_url}
-                      target="_blank"
-                      className="mil-link mil-up mil-mb-60"
-                      rel="noreferrer"
-                    >
-                      <span>View on GitHub</span>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="feather feather-arrow-right"
-                      >
-                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                        <polyline points="12 5 19 12 12 19"></polyline>
-                      </svg>
-                    </a>
-                  )}
-                </div>
+                {project.description && (
+                  <div className="col-lg-12">
+                    <div className="mil-center">
+                      <h3 className="mil-up mil-mb-30">Project Details</h3>
+                      <p className="mil-up mil-mb-30">
+                        {project.description}
+                      </p>
+                      
+                      {technologies && technologies.length > 0 && (
+                        <p className="mil-up mil-mb-30">
+                          <strong>Technologies used:</strong> {technologies.map(t => t.technology_name).join(', ')}
+                        </p>
+                      )}
+                      
+                      {project.live_url && (
+                        <a
+                          href={project.live_url}
+                          target="_blank"
+                          className="mil-link mil-up mil-mb-30"
+                          rel="noreferrer"
+                        >
+                          <span>View</span>
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="feather feather-arrow-right"
+                          >
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                          </svg>
+                        </a>
+                      )}
+
+                      {/* QR Code Section */}
+                      <div className="mil-up mil-mb-60">
+                        <h4 className="mil-text-sm mil-dark mil-mb-15">Share this project</h4>
+                        <QRCodeComponent 
+                          url={projectUrl} 
+                          size={150}
+                          className="mil-center"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </section>
             {/* project end */}
 
-            <div className="mil-section-title mil-up">
-              <div className="mil-divider"></div>
-              <h3>Similar projects</h3>
-            </div>
-
             {/* similar projects */}
             {similarProjects && similarProjects.length > 0 && (
-              <section className="mil-p-90-30">
-                <div className="row justify-content-between align-items-center">
-                  {similarProjects.map((similarProject) => (
-                    <div key={similarProject.id} className="col-lg-6">
-                      <Link href={`/projects/${similarProject.id}`} className="mil-portfolio-item mil-mb-60">
-                        <div className="mil-cover-frame mil-up">
-                          <img 
-                            src={similarProject.featured_image_url || "/placeholder.svg"} 
-                            alt={similarProject.title} 
-                          />
-                        </div>
-                        <div className="mil-description mil-up">
-                          <div>
-                            <p className="mil-upper mil-mb-5">{similarProject.category}</p>
-                            <h4>{similarProject.title}</h4>
-                          </div>
-                          <div className="mil-link mil-icon-link">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="24"
-                              height="24"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              className="feather feather-arrow-right"
-                            >
-                              <line x1="5" y1="12" x2="19" y2="12"></line>
-                              <polyline points="12 5 19 12 12 19"></polyline>
-                            </svg>
-                          </div>
-                        </div>
-                      </Link>
-                    </div>
-                  ))}
+              <>
+                <div className="mil-section-title mil-up">
+                  <div className="mil-divider"></div>
+                  <h3>Similar projects</h3>
                 </div>
-              </section>
+
+                <section className="mil-p-90-30">
+                  <div className="row justify-content-between align-items-center">
+                    {similarProjects.map((similarProject) => (
+                      <div key={similarProject.id} className="col-lg-6">
+                        <NavigationLink href={`/projects/${similarProject.id}`} className="mil-portfolio-item mil-mb-60">
+                          <div className="mil-cover-frame mil-up">
+                            <img 
+                              src={similarProject.featured_image_url || "/placeholder.svg"} 
+                              alt={similarProject.title} 
+                            />
+                          </div>
+                          <div className="mil-description mil-up">
+                            <div>
+                              <p className="mil-upper mil-mb-5">{similarProject.category}</p>
+                              <h4>{similarProject.title}</h4>
+                            </div>
+                            <div className="mil-link mil-icon-link">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                className="feather feather-arrow-right"
+                              >
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                              </svg>
+                            </div>
+                          </div>
+                        </NavigationLink>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              </>
             )}
             {/* similar projects end */}
 
@@ -275,9 +279,9 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
                   <div className="mil-center">
                     <h2 className="mil-up mil-mb-30">Ready to bring your ideas to life? I'm here to help</h2>
                     <div className="mil-up">
-                      <Link href="/contact" className="mil-btn mil-sm-btn">
+                      <NavigationLink href="/contact" className="mil-btn mil-sm-btn">
                         Contact me
-                      </Link>
+                      </NavigationLink>
                     </div>
                   </div>
                 </div>

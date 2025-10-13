@@ -17,6 +17,7 @@ import {
   ExternalLink 
 } from "lucide-react"
 import { ProjectsLoadingSkeleton } from "@/components/admin/loading-skeleton"
+import { ConfirmationModal } from "@/components/admin/confirmation-modal"
 
 interface Project {
   id: number
@@ -31,6 +32,12 @@ interface Project {
   featured_image_url: string | null
   display_order: number
   is_active: boolean
+  project_images?: Array<{
+    id: number
+    image_url: string
+    alt_text: string | null
+    display_order: number
+  }>
 }
 
 export default function ProjectsPage() {
@@ -42,6 +49,7 @@ export default function ProjectsPage() {
   const [isUploading, setIsUploading] = useState(false)
   const [editingId, setEditingId] = useState<number | null>(null)
   const [projects, setProjects] = useState<Project[]>([])
+  const [categories, setCategories] = useState<Array<{id: number, name: string}>>([])
 
   const [formData, setFormData] = useState({
     title: "",
@@ -56,9 +64,29 @@ export default function ProjectsPage() {
     display_order: 0,
     is_active: true
   })
+  const [projectImages, setProjectImages] = useState<Array<{
+    id?: number
+    image_url: string
+    alt_text: string
+    display_order: number
+  }>>([])
+  const [confirmationModal, setConfirmationModal] = useState<{
+    isOpen: boolean
+    title: string
+    message: string
+    onConfirm: () => void
+    type?: 'danger' | 'warning' | 'info'
+  }>({
+    isOpen: false,
+    title: '',
+    message: '',
+    onConfirm: () => {},
+    type: 'warning'
+  })
 
   useEffect(() => {
     fetchProjects()
+    fetchCategories()
   }, [])
 
   useEffect(() => {
@@ -99,7 +127,15 @@ export default function ProjectsPage() {
       const supabase = createClient()
       const { data, error } = await supabase
         .from('projects')
-        .select('*')
+        .select(`
+          *,
+          project_images (
+            id,
+            image_url,
+            alt_text,
+            display_order
+          )
+        `)
         .order('display_order')
 
       if (error) {
@@ -112,6 +148,22 @@ export default function ProjectsPage() {
       console.error('Error:', error)
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const fetchCategories = async () => {
+    try {
+      const supabase = createClient()
+      const { data, error } = await supabase
+        .from('categories')
+        .select('id, name')
+        .eq('is_active', true)
+        .order('display_order', { ascending: true })
+
+      if (error) throw error
+      setCategories(data || [])
+    } catch (error) {
+      console.error('Error fetching categories:', error)
     }
   }
 
@@ -143,13 +195,13 @@ export default function ProjectsPage() {
         
         // Handle specific error cases
         if (error.message.includes('Bucket not found')) {
-          alert('Images bucket not found. Please create an "images" bucket in your Supabase Storage first.')
+          showAlert('Storage Error', 'Images bucket not found. Please create an "images" bucket in your Supabase Storage first.', 'danger')
         } else if (error.message.includes('JWT')) {
-          alert('Authentication error. Please check your Supabase configuration.')
+          showAlert('Authentication Error', 'Authentication error. Please check your Supabase configuration.', 'danger')
         } else if (error.message.includes('permission')) {
-          alert('Permission denied. Please check your Supabase Storage policies.')
+          showAlert('Permission Error', 'Permission denied. Please check your Supabase Storage policies.', 'danger')
         } else {
-          alert(`Error uploading image: ${error.message}`)
+          showAlert('Upload Error', `Error uploading image: ${error.message}`, 'danger')
         }
         return
       }
@@ -164,7 +216,60 @@ export default function ProjectsPage() {
       
     } catch (error) {
       console.error('Error:', error)
-      alert(`Error uploading image: ${error instanceof Error ? error.message : 'Unknown error'}`)
+      showAlert('Upload Error', `Error uploading image: ${error instanceof Error ? error.message : 'Unknown error'}`, 'danger')
+    } finally {
+      setIsUploading(false)
+    }
+  }
+
+  const uploadProjectImage = async (file: File) => {
+    setIsUploading(true)
+    
+    try {
+      const supabase = createClient()
+      
+      // Generate unique filename
+      const fileExt = file.name.split('.').pop()
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
+      
+      // Upload to Supabase storage
+      const { data, error } = await supabase.storage
+        .from('images')
+        .upload(fileName, file)
+
+      if (error) {
+        console.error('Error uploading image:', error)
+        
+        // Handle specific error cases
+        if (error.message.includes('Bucket not found')) {
+          showAlert('Storage Error', 'Images bucket not found. Please create an "images" bucket in your Supabase Storage first.', 'danger')
+        } else if (error.message.includes('JWT')) {
+          showAlert('Authentication Error', 'Authentication error. Please check your Supabase configuration.', 'danger')
+        } else if (error.message.includes('permission')) {
+          showAlert('Permission Error', 'Permission denied. Please check your Supabase Storage policies.', 'danger')
+        } else {
+          showAlert('Upload Error', `Error uploading image: ${error.message}`, 'danger')
+        }
+        return
+      }
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('images')
+        .getPublicUrl(fileName)
+
+      // Add to project images array
+      const newImage = {
+        image_url: publicUrl,
+        alt_text: file.name.split('.')[0],
+        display_order: projectImages.length
+      }
+      
+      setProjectImages(prev => [...prev, newImage])
+      
+    } catch (error) {
+      console.error('Error:', error)
+      showAlert('Upload Error', `Error uploading image: ${error instanceof Error ? error.message : 'Unknown error'}`, 'danger')
     } finally {
       setIsUploading(false)
     }
@@ -175,6 +280,93 @@ export default function ProjectsPage() {
     if (file) {
       uploadImage(file)
     }
+  }
+
+  const handleProjectImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files
+    if (files) {
+      Array.from(files).forEach(file => {
+        if (projectImages.length < 6) {
+          uploadProjectImage(file)
+        } else {
+          showAlert('Maximum Images Reached', 'Maximum 6 images allowed per project', 'warning')
+        }
+      })
+    }
+  }
+
+  const removeProjectImage = (index: number) => {
+    setProjectImages(prev => prev.filter((_, i) => i !== index))
+  }
+
+  const updateImageAltText = (index: number, altText: string) => {
+    setProjectImages(prev => prev.map((img, i) => 
+      i === index ? { ...img, alt_text: altText } : img
+    ))
+  }
+
+  const replaceProjectImage = async (index: number, file: File) => {
+    setIsUploading(true)
+    
+    try {
+      const supabase = createClient()
+      
+      // Generate unique filename
+      const fileExt = file.name.split('.').pop()
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
+      
+      // Upload to Supabase storage
+      const { data, error } = await supabase.storage
+        .from('images')
+        .upload(fileName, file)
+
+      if (error) {
+        console.error('Error uploading image:', error)
+        showAlert('Error uploading image', error.message, 'danger')
+        return
+      }
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('images')
+        .getPublicUrl(fileName)
+
+      // Replace the image at the specified index
+      setProjectImages(prev => prev.map((img, i) => 
+        i === index ? { ...img, image_url: publicUrl } : img
+      ))
+      
+    } catch (error) {
+      console.error('Error:', error)
+      showAlert('Error uploading image', error instanceof Error ? error.message : 'Unknown error', 'danger')
+    } finally {
+      setIsUploading(false)
+    }
+  }
+
+  const addImageFromUrl = (url: string, altText: string = '') => {
+    if (projectImages.length >= 6) {
+      showAlert('Maximum images reached', 'You can only add up to 6 images per project.', 'warning')
+      return
+    }
+
+    const newImage = {
+      image_url: url,
+      alt_text: altText,
+      display_order: projectImages.length
+    }
+    
+    setProjectImages(prev => [...prev, newImage])
+  }
+
+  const showAlert = (title: string, message: string, type: 'danger' | 'warning' | 'info' = 'warning') => {
+    setConfirmationModal({
+      isOpen: true,
+      title,
+      message,
+      onConfirm: () => {},
+      type
+    })
   }
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
@@ -217,10 +409,36 @@ export default function ProjectsPage() {
           console.error('Error updating project:', error)
           return
         }
+
+        // Update project images
+        if (projectImages.length > 0) {
+          // Delete existing images
+          await supabase
+            .from('project_images')
+            .delete()
+            .eq('project_id', editingId)
+
+          // Insert new images
+          const imagesToInsert = projectImages.map(img => ({
+            project_id: editingId,
+            image_url: img.image_url,
+            alt_text: img.alt_text,
+            display_order: img.display_order
+          }))
+
+          const { error: imagesError } = await supabase
+            .from('project_images')
+            .insert(imagesToInsert)
+
+          if (imagesError) {
+            console.error('Error updating project images:', imagesError)
+          }
+        }
+
         setEditingId(null)
       } else {
         // Add new project
-        const { error } = await supabase
+        const { data: newProject, error } = await supabase
           .from('projects')
           .insert([{
             title: formData.title,
@@ -235,10 +453,30 @@ export default function ProjectsPage() {
             display_order: parseInt(formData.display_order.toString()),
             is_active: formData.is_active
           }])
+          .select()
+          .single()
 
         if (error) {
           console.error('Error adding project:', error)
           return
+        }
+
+        // Add project images
+        if (projectImages.length > 0 && newProject) {
+          const imagesToInsert = projectImages.map(img => ({
+            project_id: newProject.id,
+            image_url: img.image_url,
+            alt_text: img.alt_text,
+            display_order: img.display_order
+          }))
+
+          const { error: imagesError } = await supabase
+            .from('project_images')
+            .insert(imagesToInsert)
+
+          if (imagesError) {
+            console.error('Error adding project images:', imagesError)
+          }
         }
       }
       
@@ -256,6 +494,7 @@ export default function ProjectsPage() {
         display_order: 0, 
         is_active: true 
       })
+      setProjectImages([])
       setIsAdding(false)
       setEditingId(null)
       // Navigate back to list view
@@ -281,6 +520,19 @@ export default function ProjectsPage() {
       display_order: project.display_order,
       is_active: project.is_active
     })
+    
+    // Load project images
+    if (project.project_images) {
+      setProjectImages(project.project_images.map(img => ({
+        id: img.id,
+        image_url: img.image_url,
+        alt_text: img.alt_text || "",
+        display_order: img.display_order
+      })))
+    } else {
+      setProjectImages([])
+    }
+    
     setEditingId(project.id)
     setIsAdding(true)
     // Navigate to edit route
@@ -301,6 +553,7 @@ export default function ProjectsPage() {
       display_order: 0, 
       is_active: true 
     })
+    setProjectImages([])
     setEditingId(null)
     setIsAdding(true)
     // Navigate to add route
@@ -323,12 +576,22 @@ export default function ProjectsPage() {
       display_order: 0, 
       is_active: true 
     })
+    setProjectImages([])
     // Navigate back to list view
     router.push('/admin/projects')
   }
 
   const handleDelete = async (id: number) => {
-    if (!confirm('Are you sure you want to delete this project?')) return
+    setConfirmationModal({
+      isOpen: true,
+      title: 'Delete Project',
+      message: 'Are you sure you want to delete this project? This action cannot be undone.',
+      onConfirm: () => deleteProject(id),
+      type: 'danger'
+    })
+  }
+
+  const deleteProject = async (id: number) => {
     
     try {
       const supabase = createClient()
@@ -398,14 +661,11 @@ export default function ProjectsPage() {
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
               >
                 <option value="">Select Category</option>
-                <option value="Web App">Web App</option>
-                <option value="Mobile App">Mobile App</option>
-                <option value="API">API</option>
-                <option value="Dashboard">Dashboard</option>
-                <option value="Laravel">Laravel</option>
-                <option value="React">React</option>
-                <option value="Node.js">Node.js</option>
-                <option value="Vue.js">Vue.js</option>
+                {categories.map((category) => (
+                  <option key={category.id} value={category.name}>
+                    {category.name}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -468,24 +728,127 @@ export default function ProjectsPage() {
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Featured Image</label>
+            {/* Images Section - Featured Image and Project Images in same row */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Featured Image */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Featured Image</label>
+                
+                {/* Image Preview */}
+                {formData.featured_image_url && (
+                  <div className="mb-4">
+                    <img 
+                      src={formData.featured_image_url} 
+                      alt="Featured image preview"
+                      className="w-full h-48 object-cover rounded-lg border border-gray-300"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = 'none'
+                      }}
+                    />
+                  </div>
+                )}
+                
+                {/* URL Input */}
+                <input
+                  type="url"
+                  name="featured_image_url"
+                  value={formData.featured_image_url}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent mb-2"
+                  placeholder="https://example.com/project-image.jpg"
+                />
+                
+                {/* Upload Section */}
+                <div className="space-y-2">
+                  <div className="text-sm text-gray-500">Or upload an image:</div>
+                  <div
+                    onDrop={handleDrop}
+                    onDragOver={handleDragOver}
+                    className={`border-2 border-dashed rounded-lg p-4 text-center transition-colors ${
+                      isUploading 
+                        ? 'border-green-500 bg-green-50' 
+                        : 'border-gray-300 hover:border-gray-400'
+                    }`}
+                  >
+                    {isUploading ? (
+                      <div className="flex items-center justify-center gap-2">
+                        <Loader2 className="w-4 h-4 text-green-600 animate-spin" />
+                        <span className="text-green-600">Uploading...</span>
+                      </div>
+                    ) : (
+                      <div>
+                        <CloudUpload className="w-8 h-8 text-gray-400 mb-2 mx-auto" />
+                        <p className="text-sm text-gray-600">Drag & drop an image here</p>
+                        <p className="text-xs text-gray-500">or</p>
+                        <label className="inline-block mt-2 px-3 py-1 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 cursor-pointer">
+                          <Upload className="w-3 h-3 mr-1 inline" />
+                          Choose File
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleFileUpload}
+                            className="hidden"
+                          />
+                        </label>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Project Images */}
+              <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Project Images (Max 6)
+              </label>
               
-              {/* URL Input */}
-              <input
-                type="url"
-                name="featured_image_url"
-                value={formData.featured_image_url}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent mb-2"
-                placeholder="https://example.com/project-image.jpg"
-              />
+              {/* Add Image from URL */}
+              <div className="mb-4">
+                <div className="flex gap-2">
+                  <input
+                    type="url"
+                    placeholder="https://example.com/image.jpg"
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        const input = e.target as HTMLInputElement
+                        if (input.value.trim()) {
+                          addImageFromUrl(input.value.trim())
+                          input.value = ''
+                        }
+                      }
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      const input = (e.target as HTMLElement).previousElementSibling as HTMLInputElement
+                      if (input.value.trim()) {
+                        addImageFromUrl(input.value.trim())
+                        input.value = ''
+                      }
+                    }}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                  >
+                    Add URL
+                  </button>
+                </div>
+              </div>
               
               {/* Upload Section */}
               <div className="space-y-2">
-                <div className="text-sm text-gray-500">Or upload an image:</div>
                 <div
-                  onDrop={handleDrop}
+                  onDrop={(e) => {
+                    e.preventDefault()
+                    const files = e.dataTransfer.files
+                    Array.from(files).forEach(file => {
+                      if (file.type.startsWith('image/') && projectImages.length < 6) {
+                        uploadProjectImage(file)
+                      } else if (projectImages.length >= 6) {
+                        showAlert('Maximum Images Reached', 'Maximum 6 images allowed per project', 'warning')
+                      }
+                    })
+                  }}
                   onDragOver={handleDragOver}
                   className={`border-2 border-dashed rounded-lg p-4 text-center transition-colors ${
                     isUploading 
@@ -501,21 +864,78 @@ export default function ProjectsPage() {
                   ) : (
                     <div>
                       <CloudUpload className="w-8 h-8 text-gray-400 mb-2 mx-auto" />
-                      <p className="text-sm text-gray-600">Drag & drop an image here</p>
+                      <p className="text-sm text-gray-600">Drag & drop images here</p>
                       <p className="text-xs text-gray-500">or</p>
                       <label className="inline-block mt-2 px-3 py-1 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 cursor-pointer">
                         <Upload className="w-3 h-3 mr-1 inline" />
-                        Choose File
+                        Choose Files
                         <input
                           type="file"
                           accept="image/*"
-                          onChange={handleFileUpload}
+                          multiple
+                          onChange={handleProjectImageUpload}
                           className="hidden"
                         />
                       </label>
+                      <p className="text-xs text-gray-500 mt-1">
+                        {projectImages.length}/6 images uploaded
+                      </p>
                     </div>
                   )}
                 </div>
+              </div>
+
+              {/* Display uploaded images */}
+              {projectImages.length > 0 && (
+                <div className="mt-4">
+                  <h4 className="text-sm font-medium text-gray-700 mb-2">Uploaded Images:</h4>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {projectImages.map((image, index) => (
+                      <div key={index} className="relative border rounded-lg p-2">
+                        <img 
+                          src={image.image_url} 
+                          alt={image.alt_text}
+                          className="w-full h-24 object-cover rounded"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = '/placeholder.svg'
+                          }}
+                        />
+                        <button
+                          onClick={() => removeProjectImage(index)}
+                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
+                        >
+                          ×
+                        </button>
+                        <div className="mt-2 space-y-1">
+                          <input
+                            type="text"
+                            value={image.alt_text}
+                            onChange={(e) => updateImageAltText(index, e.target.value)}
+                            placeholder="Alt text"
+                            className="w-full px-2 py-1 text-xs border border-gray-300 rounded"
+                          />
+                          <label className="block">
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0]
+                                if (file) {
+                                  replaceProjectImage(index, file)
+                                }
+                              }}
+                              className="hidden"
+                            />
+                            <span className="text-xs text-blue-600 hover:text-blue-800 cursor-pointer">
+                              Replace image
+                            </span>
+                          </label>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
               </div>
             </div>
           </div>
@@ -650,6 +1070,16 @@ export default function ProjectsPage() {
           </div>
         ))}
       </div>
+
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={confirmationModal.isOpen}
+        onClose={() => setConfirmationModal(prev => ({ ...prev, isOpen: false }))}
+        onConfirm={confirmationModal.onConfirm}
+        title={confirmationModal.title}
+        message={confirmationModal.message}
+        type={confirmationModal.type}
+      />
     </div>
   )
 }

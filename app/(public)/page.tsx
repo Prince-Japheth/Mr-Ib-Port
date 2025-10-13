@@ -6,6 +6,7 @@ import { LanguageSkillsSection } from "@/components/language-skills-section"
 import { ServicesSection } from "@/components/services-section"
 import { HardSkillsSection } from "@/components/hard-skills-section"
 import { ExperienceSection } from "@/components/experience-section"
+import { EducationSection } from "@/components/education-section"
 import { ReviewsSection } from "@/components/reviews-section"
 import { createClient } from "@/lib/supabase/server"
 
@@ -127,7 +128,7 @@ export default async function Home() {
                       <p className="mil-up mil-mb-30">
                         {userProfile?.bio}
                       </p>
-                      <img src={userProfile?.signature_image_url} alt="signature" className="mil-up mil-sign" />
+                      <img src={userProfile?.signature_image_url} alt="signature" className="mil-up mil-sign" style={{display: 'block', margin: '0 auto'}} />
                     </div>
                   </div>
                 </div>
@@ -142,6 +143,8 @@ export default async function Home() {
             {visibleSections.has('hard_skills_section') && <HardSkillsSection />}
 
             {visibleSections.has('experience_section') && <ExperienceSection />}
+
+            {visibleSections.has('education_section') && <EducationSection />}
 
             {visibleSections.has('reviews_section') && <ReviewsSection />}
 

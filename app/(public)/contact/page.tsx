@@ -3,6 +3,7 @@ import { RightBanner } from "@/components/right-banner"
 import { PageFooter } from "@/components/page-footer"
 import { createClient } from "@/lib/supabase/server"
 import Link from "next/link"
+import { NavigationLink } from "@/components/navigation-link"
 
 interface ContactPageProps {
   searchParams: {
@@ -50,10 +51,10 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
                 <h1 className="mil-h1-sm mil-up mil-mb-60">Get In Touch</h1>
                 <ul className="mil-breadcrumbs mil-up">
                   <li>
-                    <Link href="/">Homepage</Link>
+                    <NavigationLink href="/">Homepage</NavigationLink>
                   </li>
                   <li>
-                    <Link href="/contact">Contact</Link>
+                    <NavigationLink href="/contact">Contact</NavigationLink>
                   </li>
                 </ul>
               </div>
@@ -76,28 +77,34 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
                   )}
 
                   {/* Contact Information */}
-                  <div className="row mil-mb-60">
-                    <div className="col-lg-6">
-                      <div className="mil-contact-info mil-up mil-center">
-                        <h4 className="mil-mb-15">Email</h4>
-                        <p>
-                          <a href={`mailto:${contactEmail?.setting_value || 'contact@johndoe.com'}`}>
-                            {contactEmail?.setting_value || 'contact@johndoe.com'}
-                          </a>
-                        </p>
-                      </div>
+                  {(contactEmail?.setting_value || contactPhone?.setting_value) && (
+                    <div className="row mil-mb-60">
+                      {contactEmail?.setting_value && (
+                        <div className="col-lg-6">
+                          <div className="mil-contact-info mil-up mil-center">
+                            <h4 className="mil-mb-15">Email</h4>
+                            <p>
+                              <a href={`mailto:${contactEmail.setting_value}`}>
+                                {contactEmail.setting_value}
+                              </a>
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                      {contactPhone?.setting_value && (
+                        <div className="col-lg-6">
+                          <div className="mil-contact-info mil-up mil-center">
+                            <h4 className="mil-mb-15">Phone</h4>
+                            <p>
+                              <a href={`tel:${contactPhone.setting_value}`}>
+                                {contactPhone.setting_value}
+                              </a>
+                            </p>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                    <div className="col-lg-6">
-                      <div className="mil-contact-info mil-up mil-center">
-                        <h4 className="mil-mb-15">Phone</h4>
-                        <p>
-                          <a href={`tel:${contactPhone?.setting_value || '+1 (555) 123-4567'}`}>
-                            {contactPhone?.setting_value || '+1 (555) 123-4567'}
-                          </a>
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+                  )}
 
                   <form className="mil-contact-form mil-up" action="/api/contact" method="POST">
                     <div className="row">

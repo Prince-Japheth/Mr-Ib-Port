@@ -51,7 +51,7 @@ export function Preloader() {
               key={i}
               className={`mil-circ-${i}`}
               style={{
-                backgroundColor: 'rgb(76, 175, 80)',
+                backgroundColor: 'rgb(76, 155, 175)',
                 height: '10px',
                 width: '10px',
                 margin: '0 3px',

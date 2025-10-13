@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { createClient } from "@/lib/supabase/client"
 
 export function PageFooter() {
-  const [copyrightText, setCopyrightText] = useState("© 2023. John Doe. All rights reserved.")
+  const [copyrightText, setCopyrightText] = useState("All rights reserved.")
 
   useEffect(() => {
     // Fetch copyright text from site settings

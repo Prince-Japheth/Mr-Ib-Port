@@ -105,7 +105,7 @@ export default function AdminLoginPage() {
     }
   }
 
-  // Define the light mode accent color based on the stylesheet (rgb(76, 175, 80) -> #4caf50)
+  // Define the light mode accent color based on the stylesheet (rgb(76, 155, 175) -> #4caf50)
   const ACCENT_COLOR_HEX = "#4caf50" 
 
   // Function to create a lighter hover shade of the accent color for the button

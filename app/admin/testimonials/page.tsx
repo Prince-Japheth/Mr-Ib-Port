@@ -19,7 +19,7 @@ import {
 } from "lucide-react"
 import { TestimonialsLoadingSkeleton } from "@/components/admin/loading-skeleton"
 
-interface Testimonial {
+interface Review {
   id: number
   client_name: string
   company: string
@@ -38,7 +38,7 @@ export default function TestimonialsPage() {
   const [isSaving, setIsSaving] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
   const [editingId, setEditingId] = useState<number | null>(null)
-  const [testimonials, setTestimonials] = useState<Testimonial[]>([])
+  const [reviews, setReviews] = useState<Review[]>([])
 
   const [formData, setFormData] = useState({
     client_name: "",
@@ -51,7 +51,7 @@ export default function TestimonialsPage() {
   })
 
   useEffect(() => {
-    fetchTestimonials()
+    fetchReviews()
   }, [])
 
   useEffect(() => {
@@ -61,10 +61,10 @@ export default function TestimonialsPage() {
     } else if (pathname.startsWith('/admin/testimonials/edit/')) {
       const id = pathname.split('/').pop()
       if (id) {
-        const testimonialId = parseInt(id)
-        const testimonial = testimonials.find(t => t.id === testimonialId)
-        if (testimonial) {
-          handleEdit(testimonial)
+        const reviewId = parseInt(id)
+        const review = reviews.find(r => r.id === reviewId)
+        if (review) {
+          handleEdit(review)
         }
       }
     } else if (pathname === '/admin/testimonials') {
@@ -81,9 +81,9 @@ export default function TestimonialsPage() {
         is_active: true 
       })
     }
-  }, [pathname, testimonials])
+  }, [pathname, reviews])
 
-  const fetchTestimonials = async () => {
+  const fetchReviews = async () => {
     try {
       const supabase = createClient()
       const { data, error } = await supabase
@@ -92,11 +92,11 @@ export default function TestimonialsPage() {
         .order('display_order')
 
       if (error) {
-        console.error('Error fetching testimonials:', error)
+        console.error('Error fetching reviews:', error)
         return
       }
 
-      setTestimonials(data || [])
+      setReviews(data || [])
     } catch (error) {
       console.error('Error:', error)
     } finally {
@@ -168,7 +168,7 @@ export default function TestimonialsPage() {
     e.preventDefault()
   }
 
-  const handleAddTestimonial = async () => {
+  const handleAddReview = async () => {
     setIsSaving(true)
     try {
       const supabase = createClient()
@@ -213,7 +213,7 @@ export default function TestimonialsPage() {
         }
       }
       
-      await fetchTestimonials() // Refresh data
+      await fetchReviews() // Refresh data
       setFormData({ 
         client_name: "", 
         company: "", 
@@ -234,20 +234,20 @@ export default function TestimonialsPage() {
     }
   }
 
-  const handleEdit = (testimonial: Testimonial) => {
+  const handleEdit = (review: Review) => {
     setFormData({
-      client_name: testimonial.client_name,
-      company: testimonial.company,
-      client_avatar_url: testimonial.client_avatar_url || "",
-      review_text: testimonial.review_text,
-      rating: testimonial.rating || 5,
-      display_order: testimonial.display_order,
-      is_active: testimonial.is_active
+      client_name: review.client_name,
+      company: review.company,
+      client_avatar_url: review.client_avatar_url || "",
+      review_text: review.review_text,
+      rating: review.rating || 5,
+      display_order: review.display_order,
+      is_active: review.is_active
     })
-    setEditingId(testimonial.id)
+    setEditingId(review.id)
     setIsAdding(true)
     // Navigate to edit route
-    router.push(`/admin/testimonials/edit/${testimonial.id}`)
+    router.push(`/admin/testimonials/edit/${review.id}`)
   }
 
   const handleAddNew = () => {
@@ -283,7 +283,7 @@ export default function TestimonialsPage() {
   }
 
   const handleDelete = async (id: number) => {
-    if (!confirm('Are you sure you want to delete this testimonial?')) return
+    if (!confirm('Are you sure you want to delete this review?')) return
     
     try {
       const supabase = createClient()
@@ -293,11 +293,11 @@ export default function TestimonialsPage() {
         .eq('id', id)
 
       if (error) {
-        console.error('Error deleting testimonial:', error)
+        console.error('Error deleting review:', error)
         return
       }
 
-      await fetchTestimonials() // Refresh data
+      await fetchReviews() // Refresh data
     } catch (error) {
       console.error('Error:', error)
     }
@@ -323,7 +323,7 @@ export default function TestimonialsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Testimonials</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Reviews</h1>
           <p className="text-gray-600 mt-1">Manage client reviews and testimonials</p>
         </div>
         <button
@@ -331,7 +331,7 @@ export default function TestimonialsPage() {
           className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors duration-200 flex items-center gap-2"
         >
           <Plus className="w-4 h-4" />
-          Add Testimonial
+          Add Review
         </button>
       </div>
 
@@ -339,7 +339,7 @@ export default function TestimonialsPage() {
       {isAdding && (
         <div className="bg-white border border-gray-200 rounded-lg p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            {editingId ? "Edit Testimonial" : "Add New Testimonial"}
+            {editingId ? "Edit Review" : "Add New Review"}
           </h3>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -472,7 +472,7 @@ export default function TestimonialsPage() {
 
           <div className="mt-6 flex gap-2">
             <button
-              onClick={handleAddTestimonial}
+              onClick={handleAddReview}
               disabled={isSaving}
               className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors duration-200 flex items-center gap-2 disabled:opacity-50"
             >
@@ -484,7 +484,7 @@ export default function TestimonialsPage() {
               ) : (
                 <>
                   <Save className="w-4 h-4" />
-                  {editingId ? "Update Testimonial" : "Add Testimonial"}
+                  {editingId ? "Update Review" : "Add Review"}
                 </>
               )}
             </button>
@@ -499,17 +499,17 @@ export default function TestimonialsPage() {
         </div>
       )}
 
-      {/* Testimonials Grid */}
+      {/* Reviews Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {testimonials.map((testimonial) => (
-          <div key={testimonial.id} className={`bg-white border rounded-lg p-6 hover:shadow-md transition-shadow duration-200 ${testimonial.is_active ? 'border-gray-200' : 'border-gray-300 bg-gray-50'}`}>
+        {reviews.map((review) => (
+          <div key={review.id} className={`bg-white border rounded-lg p-6 hover:shadow-md transition-shadow duration-200 ${review.is_active ? 'border-gray-200' : 'border-gray-300 bg-gray-50'}`}>
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                  {testimonial.client_avatar_url ? (
+                  {review.client_avatar_url ? (
                     <img 
-                      src={testimonial.client_avatar_url} 
-                      alt={testimonial.client_name} 
+                      src={review.client_avatar_url} 
+                      alt={review.client_name} 
                       className="w-12 h-12 rounded-full object-cover" 
                     />
                   ) : (
@@ -517,22 +517,22 @@ export default function TestimonialsPage() {
                   )}
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">{testimonial.client_name}</h3>
+                  <h3 className="text-lg font-semibold text-gray-900">{review.client_name}</h3>
                   <p className="text-green-600 text-sm flex items-center gap-1">
                     <Building className="w-3 h-3" />
-                    {testimonial.company}
+                    {review.company}
                   </p>
                 </div>
               </div>
               <div className="flex gap-2">
                 <button
-                  onClick={() => handleEdit(testimonial)}
+                  onClick={() => handleEdit(review)}
                   className="text-gray-400 hover:text-green-600 transition-colors duration-200"
                 >
                   <Edit className="w-4 h-4" />
                 </button>
                 <button
-                  onClick={() => handleDelete(testimonial.id)}
+                  onClick={() => handleDelete(review.id)}
                   className="text-gray-400 hover:text-red-600 transition-colors duration-200"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -542,43 +542,43 @@ export default function TestimonialsPage() {
 
             <div className="mb-4">
               <div className="flex items-center gap-1 mb-2">
-                {renderStars(testimonial.rating || 5)}
+                {renderStars(review.rating || 5)}
               </div>
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <Quote className="w-4 h-4" />
-                <span>Testimonial</span>
+                <span>Review</span>
               </div>
             </div>
 
             <blockquote className="text-gray-700 text-sm leading-relaxed mb-4 italic">
-              "{testimonial.review_text}"
+              "{review.review_text}"
             </blockquote>
 
             <div className="flex items-center justify-between">
               <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                testimonial.is_active 
+                review.is_active 
                   ? 'bg-green-100 text-green-800' 
                   : 'bg-red-100 text-red-800'
               }`}>
-                {testimonial.is_active ? 'Active' : 'Inactive'}
+                {review.is_active ? 'Active' : 'Inactive'}
               </span>
-              <span className="text-xs text-gray-500">Order: {testimonial.display_order}</span>
+              <span className="text-xs text-gray-500">Order: {review.display_order}</span>
             </div>
           </div>
         ))}
       </div>
 
-      {testimonials.length === 0 && (
+      {reviews.length === 0 && (
         <div className="text-center py-12">
           <Quote className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No testimonials yet</h3>
-          <p className="text-gray-600 mb-4">Add your first client testimonial to get started.</p>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">No reviews yet</h3>
+          <p className="text-gray-600 mb-4">Add your first client review to get started.</p>
           <button
             onClick={handleAddNew}
             className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors duration-200 flex items-center gap-2 mx-auto"
           >
             <Plus className="w-4 h-4" />
-            Add Testimonial
+            Add Review
           </button>
         </div>
       )}

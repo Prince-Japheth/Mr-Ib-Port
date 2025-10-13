@@ -1,13 +1,77 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
+import { createClient } from "@/lib/supabase/client"
 
 interface RightBannerProps {
   backgroundImage?: string
   showPerson?: boolean
 }
 
+interface FloatingSkill {
+  id: number
+  name: string
+  icon_url: string
+  alt_text: string | null
+  position_top: string | null
+  position_left: string | null
+  position_bottom: string | null
+  position_right: string | null
+  width: string
+  height: string
+  display_order: number
+  is_active: boolean
+}
+
+interface BannerImage {
+  id: number
+  image_type: string
+  image_url: string
+  alt_text: string | null
+  is_default: boolean
+  is_active: boolean
+}
+
 export function RightBanner({ backgroundImage = "https://miller.bslthemes.com/courtney-demo/light/img/person/bg-1.jpg", showPerson = true }: RightBannerProps) {
+  const [floatingSkills, setFloatingSkills] = useState<FloatingSkill[]>([])
+  const [bannerImages, setBannerImages] = useState<BannerImage[]>([])
+  
+  useEffect(() => {
+    fetchFloatingSkills()
+    fetchBannerImages()
+  }, [])
+
+  const fetchFloatingSkills = async () => {
+    try {
+      const supabase = createClient()
+      const { data, error } = await supabase
+        .from('floating_skills')
+        .select('*')
+        .eq('is_active', true)
+        .order('display_order', { ascending: true })
+
+      if (error) throw error
+      setFloatingSkills(data || [])
+    } catch (error) {
+      console.error('Error fetching floating skills:', error)
+    }
+  }
+
+  const fetchBannerImages = async () => {
+    try {
+      const supabase = createClient()
+      const { data, error } = await supabase
+        .from('banner_images')
+        .select('*')
+        .eq('is_active', true)
+        .order('is_default', { ascending: false })
+
+      if (error) throw error
+      setBannerImages(data || [])
+    } catch (error) {
+      console.error('Error fetching banner images:', error)
+    }
+  }
   
   useEffect(() => {
     // Ensure parallax is initialized for this specific component
@@ -51,29 +115,58 @@ export function RightBanner({ backgroundImage = "https://miller.bslthemes.com/co
 
       <div className="mil-banner-wrapper" data-depth="1">
         <div className="mil-banner-frame">
-          <img src={backgroundImage} alt="background" className={showPerson ? "mil-banner-bg mil-blur" : "mil-banner-bg"} />
+          <img 
+            src={bannerImages.find(img => img.image_type === 'background')?.image_url || backgroundImage} 
+            alt={bannerImages.find(img => img.image_type === 'background')?.alt_text || "background"} 
+            className={showPerson ? "mil-banner-bg mil-blur" : "mil-banner-bg"} 
+          />
         </div>
       </div>
 
       {showPerson && (
         <div className="mil-banner-wrapper" data-depth="0.2">
           <div className="mil-banner-frame">
-            <img src="https://static.vecteezy.com/system/resources/thumbnails/045/592/915/small_2x/black-businessman-with-crossed-arms-on-transparent-background-png.png" alt="person" className="mil-banner-person" />
+            <img 
+              src={bannerImages.find(img => img.image_type === 'person')?.image_url || "https://static.vecteezy.com/system/resources/thumbnails/045/592/915/small_2x/black-businessman-with-crossed-arms-on-transparent-background-png.png"} 
+              alt={bannerImages.find(img => img.image_type === 'person')?.alt_text || "person"} 
+              className="mil-banner-person" 
+            />
           </div>
         </div>
       )}
 
       <div className="mil-flying-skills" data-depth="0.1">
         <div className="mil-skills-frame">
-          <div className="mil-item" style={{ top: "30%", left: "10%", width: "80px", height: "80px" }}>
-            <img src="https://cdn-icons-png.flaticon.com/128/10826/10826338.png" alt="React" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
-          </div>
-          <div className="mil-item" style={{ bottom: "15%", left: "20%", width: "80px", height: "80px" }}>
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRnhoVwuJmtF1Lu4t9WcsZ7fESV9KdIQ7pVHw&s" alt="Laravel" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
-          </div>
-          <div className="mil-item" style={{ bottom: "45%", right: "15%", width: "80px", height: "80px" }}>
-            <img src="https://cdn-icons-png.flaticon.com/128/5968/5968292.png" alt="JavaScript" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
-          </div>
+          {floatingSkills.map((skill) => {
+            const positionStyle: React.CSSProperties = {
+              width: skill.width,
+              height: skill.height,
+              objectFit: "contain"
+            }
+            
+            // Apply positioning based on database values
+            if (skill.position_top) positionStyle.top = skill.position_top
+            if (skill.position_left) positionStyle.left = skill.position_left
+            if (skill.position_bottom) positionStyle.bottom = skill.position_bottom
+            if (skill.position_right) positionStyle.right = skill.position_right
+            
+            return (
+              <div 
+                key={skill.id} 
+                className="mil-item" 
+                style={positionStyle}
+              >
+                <img 
+                  src={skill.icon_url} 
+                  alt={skill.alt_text || skill.name} 
+                  style={{ width: "100%", height: "100%", objectFit: "contain" }}
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = '/placeholder.svg'
+                  }}
+                />
+              </div>
+            )
+          })}
           <div className="mil-el mil-addition-el-1">+</div>
           <div className="mil-el mil-addition-el-2">+</div>
           <div className="mil-el mil-addition-el-3"></div>
