@@ -46,7 +46,7 @@ const navItems = [
   { href: "/admin/testimonials", label: "Testimonials", icon: Quote },
   { href: "/admin/social-links", label: "Social Links", icon: LinkIcon },
   { href: "/admin/messages", label: "Messages", icon: Mail },
-  { href: "/admin/section-visibility", label: "Section Visibility", icon: Eye },
+  // { href: "/admin/section-visibility", label: "Section Visibility", icon: Eye },
 ]
 
 export default function AdminSidebar({ isOpen = false, onClose }: AdminSidebarProps) {
