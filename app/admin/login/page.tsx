@@ -105,8 +105,8 @@ export default function AdminLoginPage() {
     }
   }
 
-  // Define the light mode accent color based on the stylesheet (rgb(76, 155, 175) -> #4caf50)
-  const ACCENT_COLOR_HEX = "#4caf50" 
+  // Define the light mode accent color based on the stylesheet (rgb(76, 155, 175) -> #4c9baf)
+  const ACCENT_COLOR_HEX = "#4c9baf" 
 
   // Function to create a lighter hover shade of the accent color for the button
   const getHoverColor = (hex: string, percent: number) => {
@@ -131,7 +131,7 @@ export default function AdminLoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center p-6">
       <div className="w-full max-w-md">
-        <div className="bg-white border border-gray-200 p-8 shadow-lg">
+        <div className="bg-white border border-gray-200 p-8 shadow-lg rounded-2xl">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
               {isSignup ? "Admin Signup" : "Admin Login"}
@@ -203,7 +203,7 @@ export default function AdminLoginPage() {
                 backgroundColor: ACCENT_COLOR_HEX, 
                 '--tw-hover-bg-color': HOVER_COLOR_HEX 
               } as React.CSSProperties}
-              className="w-full px-4 py-3 text-black font-medium rounded-lg hover:bg-[var(--tw-hover-bg-color)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full px-4 py-3 text-white font-medium rounded-lg hover:bg-[var(--tw-hover-bg-color)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading 
                 ? (isSignup ? "Creating account..." : "Signing in...") 

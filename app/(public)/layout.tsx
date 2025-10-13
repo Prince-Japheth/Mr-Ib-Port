@@ -32,7 +32,7 @@ export default function PublicLayout({
         </Script>
       </head>
       
-      <NextTopLoader color="#4caf50" height={3} showSpinner={false} />
+      <NextTopLoader color="#4c9baf" height={3} showSpinner={false} />
       
       {/* Preloader */}
       <div className="mil-preloader-frame" id="preloader">
