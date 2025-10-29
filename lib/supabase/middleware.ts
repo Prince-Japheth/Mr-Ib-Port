@@ -1,14 +1,17 @@
 import { createServerClient } from "@supabase/ssr"
 import { NextResponse, type NextRequest } from "next/server"
 
+const SUPABASE_URL = "https://pxllnykfbdodbfqyzkmi.supabase.co"
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4bGxueWtmYmRvZGJmcXl6a21pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk5MjQ3ODMsImV4cCI6MjA3NTUwMDc4M30.VmdPx1fGkxNfmG2KV71mW_aV8f-OLsfThC2apK0qcUQ"
+
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
   })
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY,
     {
       cookies: {
         getAll() {
