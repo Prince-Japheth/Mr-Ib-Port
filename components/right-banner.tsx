@@ -32,10 +32,10 @@ interface BannerImage {
   is_active: boolean
 }
 
-export function RightBanner({ backgroundImage = "https://miller.bslthemes.com/courtney-demo/light/img/person/bg-1.jpg", showPerson = true }: RightBannerProps) {
+export function RightBanner({ backgroundImage, showPerson = true }: RightBannerProps) {
   const [floatingSkills, setFloatingSkills] = useState<FloatingSkill[]>([])
   const [bannerImages, setBannerImages] = useState<BannerImage[]>([])
-  
+
   useEffect(() => {
     fetchFloatingSkills()
     fetchBannerImages()
@@ -72,7 +72,9 @@ export function RightBanner({ backgroundImage = "https://miller.bslthemes.com/co
       console.error('Error fetching banner images:', error)
     }
   }
-  
+
+
+
   useEffect(() => {
     // Ensure parallax is initialized for this specific component
     const initParallax = () => {
@@ -83,20 +85,20 @@ export function RightBanner({ backgroundImage = "https://miller.bslthemes.com/co
           if ((scene as any).parallaxInstance) {
             (scene as any).parallaxInstance.destroy()
           }
-          
+
           // Create new parallax instance
-          ;(scene as any).parallaxInstance = new (window as any).Parallax(scene, {
+          ; (scene as any).parallaxInstance = new (window as any).Parallax(scene, {
             limitY: 15,
           })
-          
-          console.log('RightBanner: Parallax initialized')
+
+          console.log('RightBanner: Parallax initialized...')
         }
       }
     }
 
     // Try multiple times to ensure initialization
     const timer1 = setTimeout(initParallax, 100)
-    const timer2 = setTimeout(initParallax, 500)
+    const timer2 = setTimeout(initParallax, 505)
     const timer3 = setTimeout(initParallax, 1000)
 
     return () => {
@@ -104,7 +106,7 @@ export function RightBanner({ backgroundImage = "https://miller.bslthemes.com/co
       clearTimeout(timer2)
       clearTimeout(timer3)
     }
-  }, [])
+  }, [bannerImages])
   return (
     <div className="mil-right-banner" id="scene">
       {/* scrollbar */}
@@ -115,21 +117,23 @@ export function RightBanner({ backgroundImage = "https://miller.bslthemes.com/co
 
       <div className="mil-banner-wrapper" data-depth="1">
         <div className="mil-banner-frame">
-          <img 
-            src={bannerImages.find(img => img.image_type === 'background')?.image_url || backgroundImage} 
-            alt={bannerImages.find(img => img.image_type === 'background')?.alt_text || "background"} 
-            className={showPerson ? "mil-banner-bg mil-blur" : "mil-banner-bg"} 
-          />
+          {(bannerImages.find(img => img.image_type === 'background')?.image_url || backgroundImage) && (
+            <img
+              src={bannerImages.find(img => img.image_type === 'background')?.image_url || backgroundImage}
+              alt={bannerImages.find(img => img.image_type === 'background')?.alt_text || "background"}
+              className={showPerson ? "mil-banner-bg mil-blur" : "mil-banner-bg"}
+            />
+          )}
         </div>
       </div>
 
-      {showPerson && (
+      {showPerson && bannerImages.find(img => img.image_type === 'person')?.image_url && (
         <div className="mil-banner-wrapper" data-depth="0.2">
           <div className="mil-banner-frame">
-            <img 
-              src={bannerImages.find(img => img.image_type === 'person')?.image_url || "https://static.vecteezy.com/system/resources/thumbnails/045/592/915/small_2x/black-businessman-with-crossed-arms-on-transparent-background-png.png"} 
-              alt={bannerImages.find(img => img.image_type === 'person')?.alt_text || "person"} 
-              className="mil-banner-person" 
+            <img
+              src={bannerImages.find(img => img.image_type === 'person')?.image_url}
+              alt={bannerImages.find(img => img.image_type === 'person')?.alt_text || "person"}
+              className="mil-banner-person"
             />
           </div>
         </div>
@@ -143,22 +147,22 @@ export function RightBanner({ backgroundImage = "https://miller.bslthemes.com/co
               height: skill.height,
               objectFit: "contain"
             }
-            
+
             // Apply positioning based on database values
             if (skill.position_top) positionStyle.top = skill.position_top
             if (skill.position_left) positionStyle.left = skill.position_left
             if (skill.position_bottom) positionStyle.bottom = skill.position_bottom
             if (skill.position_right) positionStyle.right = skill.position_right
-            
+
             return (
-              <div 
-                key={skill.id} 
-                className="mil-item" 
+              <div
+                key={skill.id}
+                className="mil-item"
                 style={positionStyle}
               >
-                <img 
-                  src={skill.icon_url} 
-                  alt={skill.alt_text || skill.name} 
+                <img
+                  src={skill.icon_url}
+                  alt={skill.alt_text || skill.name}
                   style={{ width: "100%", height: "100%", objectFit: "contain" }}
                   onError={(e) => {
                     (e.target as HTMLImageElement).src = '/placeholder.svg'
