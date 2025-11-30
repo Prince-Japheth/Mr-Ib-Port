@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, usePathname } from "next/navigation"
 import NextTopLoader from "nextjs-toploader"
 import AdminSidebar from "@/components/admin/sidebar"
 import AdminHeader from "@/components/admin/header"
@@ -16,25 +16,26 @@ export default function AdminLayout({
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
+  const pathname = usePathname()
 
   useEffect(() => {
     // Check authentication status
     const checkAuth = () => {
       const cookies = document.cookie.split(';')
-      const adminCookie = cookies.find(cookie => 
+      const adminCookie = cookies.find(cookie =>
         cookie.trim().startsWith('admin-authenticated=')
       )
       const isAuth = adminCookie?.split('=')[1] === 'true'
       setIsAuthenticated(isAuth)
       setIsLoading(false)
-      
+
       if (!isAuth && !window.location.pathname.includes('/admin/login')) {
         router.push('/admin/login')
       }
     }
 
     checkAuth()
-  }, [router])
+  }, [router, pathname])
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen)
