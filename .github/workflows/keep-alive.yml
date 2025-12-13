@@ -1,0 +1,79 @@
+name: Supabase Keep-Alive
+
+on:
+  schedule:
+    # Run every 6 hours to keep Supabase active
+    - cron: '0 */6 * * *'
+    # Also run daily at midnight UTC
+    - cron: '0 0 * * *'
+    # Run every Monday at 9 AM UTC (start of week)
+    - cron: '0 9 * * 1'
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  keep-alive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    
+    steps:
+      - name: Ping Supabase Keep-Alive Endpoint
+        run: |
+          SUPABASE_URL="${SUPABASE_URL:-https://pxllnykfbdodbfqyzkmi.supabase.co}"
+          KEEP_ALIVE_URL="${KEEP_ALIVE_URL:-https://your-domain.com/api/keep-alive}"
+          
+          echo "Pinging Supabase keep-alive endpoint..."
+          
+          # Try the keep-alive endpoint first
+          response=$(curl -s -w "\n%{http_code}" "$KEEP_ALIVE_URL" || echo "000")
+          http_code=$(echo "$response" | tail -n1)
+          body=$(echo "$response" | sed '$d')
+          
+          if [ "$http_code" = "200" ]; then
+            echo "✅ Keep-alive ping successful"
+            echo "$body"
+          else
+            echo "⚠️ Keep-alive endpoint returned $http_code"
+            echo "$body"
+            
+            # Fallback: Direct Supabase ping
+            echo "Attempting direct Supabase connection..."
+            curl -X POST "$SUPABASE_URL/rest/v1/keep_alive" \
+              -H "apikey: ${SUPABASE_ANON_KEY}" \
+              -H "Content-Type: application/json" \
+              -d '{"status": "active"}' || echo "Direct ping failed"
+          fi
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL || 'https://pxllnykfbdodbfqyzkmi.supabase.co' }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          KEEP_ALIVE_URL: ${{ secrets.KEEP_ALIVE_URL || 'https://your-domain.com/api/keep-alive' }}
+
+  cron-keep-alive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    
+    steps:
+      - name: Ping Cron Keep-Alive Endpoint
+        run: |
+          CRON_URL="${CRON_URL:-https://your-domain.com/api/keep-alive/cron}"
+          CRON_SECRET="${CRON_SECRET:-your-secret-key-change-this}"
+          
+          echo "Pinging cron keep-alive endpoint..."
+          
+          response=$(curl -s -w "\n%{http_code}" \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            "$CRON_URL" || echo "000")
+          
+          http_code=$(echo "$response" | tail -n1)
+          body=$(echo "$response" | sed '$d')
+          
+          if [ "$http_code" = "200" ]; then
+            echo "✅ Cron keep-alive ping successful"
+            echo "$body"
+          else
+            echo "⚠️ Cron keep-alive endpoint returned $http_code"
+            echo "$body"
+          fi
+        env:
+          CRON_URL: ${{ secrets.CRON_URL || 'https://your-domain.com/api/keep-alive/cron' }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+
